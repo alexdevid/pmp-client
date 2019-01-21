@@ -19,37 +19,44 @@
 <style src="../assets/less/form.less" lang="less">
 </style>
 <style scoped lang="less">
-    .login-form {
-        width: 50%;
-        margin: 0 auto;
-    }
+.login-form {
+  width: 50%;
+  margin: 0 auto;
+}
 </style>
 <script>
-    import Message from '@/components/Message.vue';
-    import Client from '../client.js';
+import Message from "@/components/Message.vue";
+import Client from "../client.js";
 
-    export default {
-        name: "login",
-        data: function () {
-            return {
-                username: null,
-                password: null,
-                error: null
-            };
-        },
-        components: {Message},
-        methods: {
-            login: function () {
-                const {username, password} = this;
-                Client.getToken({username: username, password: password}, () => {
-                    this.$store.state.user = {username: username};
-                    localStorage.setItem('credentials', JSON.stringify({username: username, password: password}));
-                    this.$root.$emit("userLogged", username);
-                    this.$router.push("/");
-                }, (error) => {
-                    this.error = error.message;
-                })
-            }
-        },
+export default {
+  name: "login",
+  data: function() {
+    return {
+      username: null,
+      password: null,
+      error: null
     };
+  },
+  components: { Message },
+  methods: {
+    login: function() {
+      const { username, password } = this;
+      Client.getToken(
+        { username: username, password: password },
+        () => {
+          this.$store.state.user = { username: username };
+          localStorage.setItem(
+            "credentials",
+            JSON.stringify({ username: username, password: password })
+          );
+          this.$root.$emit("userLogged", username);
+          this.$router.push("/");
+        },
+        error => {
+          this.error = error.message;
+        }
+      );
+    }
+  }
+};
 </script>

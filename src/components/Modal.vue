@@ -27,61 +27,60 @@
 </template>
 
 <script>
-    export default {
-        name: 'Modal',
-        props: ['width'],
-        data: function () {
-            return {
-            };
-        },
-    }
+export default {
+  name: "Modal",
+  props: ["width"],
+  data: function() {
+    return {};
+  }
+};
 </script>
 
 <style lang="less">
-    .modal {
-        &-overlay {
-            position: fixed;
-            z-index: 1100;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, .5);
-            transition: opacity .1s ease;
-        }
-        &-container {
-            max-width: 600px;
-            margin: 200px auto;
-            background-color: #fff;
-            border-radius: 2px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
-            transition: all .1s ease;
-            font-family: Helvetica, Arial, sans-serif;
-        }
-        &-header {
-            background-color: #2f4f4f;
-            padding: 10px 20px;
-            color: #fff;
-        }
-        &-body {
-            padding: 10px 20px;
-        }
-        &-footer {
-            padding: 15px 20px;
-            text-align: right;
-        }
-    }
+.modal {
+  &-overlay {
+    position: fixed;
+    z-index: 1100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.1s ease;
+  }
+  &-container {
+    max-width: 600px;
+    margin: 200px auto;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.1s ease;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+  &-header {
+    background-color: #2f4f4f;
+    padding: 10px 20px;
+    color: #fff;
+  }
+  &-body {
+    padding: 10px 20px;
+  }
+  &-footer {
+    padding: 15px 20px;
+    text-align: right;
+  }
+}
 
-    .modal-enter {
-        opacity: 0;
-    }
+.modal-enter {
+  opacity: 0;
+}
 
-    .modal-leave-active {
-        opacity: 0;
-    }
+.modal-leave-active {
+  opacity: 0;
+}
 
-    .modal-enter .modal-container,
-    .modal-leave-active .modal-container {
-        transform: translate(0, -30px);
-    }
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  transform: translate(0, -30px);
+}
 </style>

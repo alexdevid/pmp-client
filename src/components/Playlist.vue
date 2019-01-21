@@ -41,79 +41,87 @@
     </div>
 </template>
 
-<style src="../assets/less/playlist.less" lang="less"></style>
+<style src="../assets/less/playlist.less" lang="less">
+</style>
 
 <script>
-    import Search from "@/components/Search.vue";
-    import Client from '../client';
-    import Events from '../events';
+import Search from "@/components/Search.vue";
+import Client from "../client";
+import Events from "../events";
 
-    export default {
-        name: "Playlist",
-        props: ['tracks'],
-        data: function () {
-            return {
-                playing: null,
-                paused: null,
-                loaded: false
-            };
-        },
-        mounted() {
-            this.$root.$on("playerPaused", track => {
-                this.paused = track.id;
-            });
-            this.$root.$on("playerPlayNext", track => {
-                let next = null;
-                const index = this.tracks.indexOf(track);
-
-                if (index >= 0 && index < this.tracks.length - 1) {
-                    next = this.tracks[index + 1];
-                    this.play(next);
-                }
-            });
-            this.$root.$on("playerPlayPrev", track => {
-                let prev = null;
-                const index = this.tracks.indexOf(track);
-
-                if (index > 0) {
-                    prev = this.tracks[index - 1];
-                    this.play(prev);
-                }
-            });
-        },
-        methods: {
-            handleFav: function (track) {
-                Client.post('/audio/favorite/' + track.id, {}, (response) => {
-                    track.favourite = !track.favourite;
-                    if (track.favourite === false && this.$router.currentRoute.name === 'profile-music') {
-                        this.tracks.splice(this.tracks.indexOf(track), 1);
-                    }
-
-                }, (error) => {
-                    console.error(error);
-                });
-            },
-            play(track) {
-                if (this.playing && this.playing === track.id && !this.paused) {
-                    this.$root.$emit("audioPause", track);
-                    this.paused = track.id;
-                    return;
-                }
-
-                if (this.playing && this.playing === track.id && this.paused) {
-                    this.$root.$emit(Events.PLAYER.PLAY, track);
-                    this.paused = null;
-                    this.playing = track.id;
-                    return;
-                }
-
-                this.$root.$emit(Events.PLAYER.PLAY, track);
-                this.paused = null;
-                this.playing = track.id;
-            }
-        },
-        components: {
-            Search
-        }
+export default {
+  name: "Playlist",
+  props: ["tracks"],
+  data: function() {
+    return {
+      playing: null,
+      paused: null,
+      loaded: false
     };
+  },
+  mounted() {
+    this.$root.$on("playerPaused", track => {
+      this.paused = track.id;
+    });
+    this.$root.$on("playerPlayNext", track => {
+      let next = null;
+      const index = this.tracks.indexOf(track);
+
+      if (index >= 0 && index < this.tracks.length - 1) {
+        next = this.tracks[index + 1];
+        this.play(next);
+      }
+    });
+    this.$root.$on("playerPlayPrev", track => {
+      let prev = null;
+      const index = this.tracks.indexOf(track);
+
+      if (index > 0) {
+        prev = this.tracks[index - 1];
+        this.play(prev);
+      }
+    });
+  },
+  methods: {
+    handleFav: function(track) {
+      Client.post(
+        "/audio/favorite/" + track.id,
+        {},
+        response => {
+          track.favourite = !track.favourite;
+          if (
+            track.favourite === false &&
+            this.$router.currentRoute.name === "profile-music"
+          ) {
+            this.tracks.splice(this.tracks.indexOf(track), 1);
+          }
+        },
+        error => {
+          console.error(error);
+        }
+      );
+    },
+    play(track) {
+      if (this.playing && this.playing === track.id && !this.paused) {
+        this.$root.$emit("audioPause", track);
+        this.paused = track.id;
+        return;
+      }
+
+      if (this.playing && this.playing === track.id && this.paused) {
+        this.$root.$emit(Events.PLAYER.PLAY, track);
+        this.paused = null;
+        this.playing = track.id;
+        return;
+      }
+
+      this.$root.$emit(Events.PLAYER.PLAY, track);
+      this.paused = null;
+      this.playing = track.id;
+    }
+  },
+  components: {
+    Search
+  }
+};
 </script>

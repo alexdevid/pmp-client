@@ -39,41 +39,42 @@
     </div>
 </template>
 
-<style src="../assets/less/playlist.less" lang="less"></style>
+<style src="../assets/less/playlist.less" lang="less">
+</style>
 <script>
-    import Search from "@/components/Search.vue";
-    import Events from '../events';
+import Search from "@/components/Search.vue";
+import Events from "../events";
 
-    export default {
-        name: 'radio',
-        data: function () {
-            return {
-                playing: null,
-                paused: null,
-                loaded: false,
-                stations: []
-            };
-        },
-        created: function () {
-            this.$http
-                .get("http://music.test/index.php/api/radio")
-                .then(function (response) {
-                    this.stations = response.data;
-                    this.loaded = true;
-                });
-        },
-        methods: {
-            handleFav: function (station) {
-                station.favourite = !station.favourite;
-            },
-            play(station) {
-                this.$root.$emit(Events.PLAYER.PLAY, station);
-                this.paused = null;
-                this.playing = station.id;
-            }
-        },
-        components: {
-            Search
-        }
+export default {
+  name: "radio",
+  data: function() {
+    return {
+      playing: null,
+      paused: null,
+      loaded: false,
+      stations: []
+    };
+  },
+  created: function() {
+    this.$http
+      .get("http://music.test/index.php/api/radio")
+      .then(function(response) {
+        this.stations = response.data;
+        this.loaded = true;
+      });
+  },
+  methods: {
+    handleFav: function(station) {
+      station.favourite = !station.favourite;
+    },
+    play(station) {
+      this.$root.$emit(Events.PLAYER.PLAY, station);
+      this.paused = null;
+      this.playing = station.id;
     }
+  },
+  components: {
+    Search
+  }
+};
 </script>

@@ -19,33 +19,31 @@
 </template>
 
 <script>
-    export default {
-        name: 'TopNav',
-        components: {},
-        mounted() {
-
-        }
-    }
+export default {
+  name: "TopNav",
+  components: {},
+  mounted() {}
+};
 </script>
 
 <style lang="less">
-    .top-nav {
-        max-width: 960px;
-        margin: 0 auto;
-        display: flex;
+.top-nav {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
 
-        &-item {
-            padding: 14px 10px;
-            color: #fff;
+  &-item {
+    padding: 14px 10px;
+    color: #fff;
 
-            &-user {
-                margin-left: auto;
-            }
-
-            &:hover {
-                color: #fff;
-                background-color: lighten(#2f4f4f, 10);
-            }
-        }
+    &-user {
+      margin-left: auto;
     }
+
+    &:hover {
+      color: #fff;
+      background-color: lighten(#2f4f4f, 10);
+    }
+  }
+}
 </style>

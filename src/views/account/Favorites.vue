@@ -8,28 +8,32 @@
 </template>
 
 <script>
-    import Playlist from '@/components/Playlist.vue';
-    import Client from '../../client';
+import Playlist from "@/components/Playlist.vue";
+import Client from "../../client";
 
-    export default {
-        name: "Favorites",
+export default {
+  name: "Favorites",
 
-        data: function () {
-            return {
-                empty: false,
-                tracks: []
-            };
-        },
-        mounted() {
-            Client.get('/audio/' + this.$store.state.user.username, (response) => {
-                if (response.data.length === 0) {
-                    this.empty = true;
-                }
-                this.tracks = response.data;
-            }, (error) => {
-                console.error(error);
-            });
-        },
-        components: {Playlist}
+  data: function() {
+    return {
+      empty: false,
+      tracks: []
     };
+  },
+  mounted() {
+    Client.get(
+      "/audio/" + this.$store.state.user.username,
+      response => {
+        if (response.data.length === 0) {
+          this.empty = true;
+        }
+        this.tracks = response.data;
+      },
+      error => {
+        console.error(error);
+      }
+    );
+  },
+  components: { Playlist }
+};
 </script>

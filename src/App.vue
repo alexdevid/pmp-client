@@ -30,16 +30,16 @@
 <script>
     import Player from "@/components/Player.vue";
     import TopNav from "@/components/TopNav.vue";
-    import Message from '@/components/Message.vue';
-    import Client from './client.js';
-    import Events from './events';
+    import Message from "@/components/Message.vue";
+    import Client from "./client.js";
+    import Events from "./events";
 
     export default {
         name: "app",
         data: function () {
             return {
                 authorized: false,
-                showLoginMessage: false,
+                showLoginMessage: false
             };
         },
         mounted() {
@@ -48,13 +48,13 @@
             this.$root.$on("userLogout", () => {
                 this.logout();
             });
-            this.$root.$on(Events.AUTHORIZATION.SUCCESS, (username) => {
+            this.$root.$on(Events.AUTHORIZATION.SUCCESS, username => {
                 console.log(Events.AUTHORIZATION.SUCCESS);
                 this.authorized = true;
                 this.showLoginMessage = false;
                 this.$store.state.user = {username: username};
             });
-            this.$root.$on(Events.AUTHORIZATION.FAILURE, (username) => {
+            this.$root.$on(Events.AUTHORIZATION.FAILURE, username => {
                 console.log(Events.AUTHORIZATION.FAILURE);
                 this.authorized = false;
                 this.$store.state.user = null;
@@ -82,7 +82,7 @@
         },
         watch: {
             $route: function (from, to) {
-//                this.checkLogin();
+                //                this.checkLogin();
             }
         }
     };

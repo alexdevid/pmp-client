@@ -26,75 +26,77 @@
 </template>
 
 <style lang="less">
-    @import "../../assets/less/tag.less";
+@import "../../assets/less/tag.less";
 
-    .profile {
-        padding: 0 10px;
+.profile {
+  padding: 0 10px;
 
-        &-image {
-            img {
-                width: 150px;
-                height: 150px;
-                border-radius: 2px;
-            }
-        }
-        &-block {
-            display: flex;
-        }
-
-        &-info {
-            display: flex;
-            flex-direction: column;
-            margin-left: 20px;
-            h1 {
-                margin: 0 0 10px;
-                line-height: 26px;
-            }
-        }
-
-        &-artists {
-            margin-top: 20px;
-        }
-
-        &-stats {
-            margin-top: auto;
-            text-transform: uppercase;
-
-            a {
-                margin: 0 20px;
-                color: #7d7d7d;
-
-                &:hover {
-                    color: #000;
-                }
-
-                &:first-child {
-                    margin-left: 0;
-                }
-            }
-        }
+  &-image {
+    img {
+      width: 150px;
+      height: 150px;
+      border-radius: 2px;
     }
+  }
+  &-block {
+    display: flex;
+  }
+
+  &-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    h1 {
+      margin: 0 0 10px;
+      line-height: 26px;
+    }
+  }
+
+  &-artists {
+    margin-top: 20px;
+  }
+
+  &-stats {
+    margin-top: auto;
+    text-transform: uppercase;
+
+    a {
+      margin: 0 20px;
+      color: #7d7d7d;
+
+      &:hover {
+        color: #000;
+      }
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+}
 </style>
 
 <script>
-    import Client from '../../client';
+import Client from "../../client";
 
-    export default {
-        name: "Profile",
-        data: function () {
-            return {
-                user: null
-            };
-        },
-        mounted() {
-            Client.get('/user/' + this.$store.state.user.username, (response) => {
-                this.user = response.body;
-            }, (error) => {
-                console.log(error);
-            })
-        },
-        methods: {
-
-        },
+export default {
+  name: "Profile",
+  data: function() {
+    return {
+      user: null
     };
+  },
+  mounted() {
+    Client.get(
+      "/user/" + this.$store.state.user.username,
+      response => {
+        this.user = response.body;
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  },
+  methods: {}
+};
 </script>

@@ -7,14 +7,10 @@
             <i class="fas fa-sync-alt fa-spin"></i>
         </div>
         <form enctype="multipart/form-data" novalidate class="upload-form" v-if="showUploadForm">
-            <p>
-                Cras risus arcu, finibus sed luctus vel, ultricies eu urna. Nam placerat cursus mi vitae aliquam.
-                Fusce maximus feugiat mauris, ac mattis odio euismod in. Suspendisse hendrerit sed sapien sit amet pellentesque.
-                Aenean pulvinar in est quis sodales. Morbi in aliquet elit. Integer eget orci non sem ornare aliquam.
-                Morbi gravida laoreet felis vel placerat.
-            </p>
-            <a href="#" class="button" v-if="!uploading && !uploaded"
-               @click="$refs.file.click()">Select a file</a>
+            <p>You can upload not more that 4 files at once</p>
+            <p>Each file should be less than 50MB</p>
+            <p>Allowed file types are `mp3` and `m4a`</p>
+            <a href="#" class="button file-select" v-if="!uploading && !uploaded" @click="$refs.file.click()">Select files</a>
             <input type="file" multiple name="audio" :disabled="uploading" ref="file"
                    @change="onAddFile($event.target.name, $event.target.files); fileCount = $event.target.files.length"
                    style="display: none">
@@ -22,6 +18,9 @@
         <form v-if="showEditForm">
             <div class="uploaded-form" v-for="file in uploadedFiles"
                  :class="[saving === file.id ? 'saving': '', editing === file.id ? 'editing' : '']">
+                <div class="page-loading">
+                    <i class="fas fa-sync-alt fa-spin"></i>
+                </div>
                 <div class="track">
                     <div class="track-image">
                         <img src="../assets/trackpic.jpg" v-if="!file.cover">
@@ -82,7 +81,12 @@
         text-align: center;
 
         p {
-            text-align: left;
+            margin: 5px;
+        }
+
+        .file-select {
+            display: inline-block;
+            margin-top: 30px;
         }
     }
 
@@ -101,6 +105,7 @@
         width: 50%;
         margin: 0 auto 30px;
         display: none;
+        position: relative;
 
         &.editing {
             display: block;
@@ -109,6 +114,20 @@
         &.saving {
             opacity: .5;
             pointer-events: none;
+
+            .page-loading {
+                display: flex;
+            }
+        }
+
+        .page-loading {
+            display: none;
+            margin: 0 auto;
+            position: absolute;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
 
         .track {
@@ -121,7 +140,7 @@
             }
 
             &-info {
-                width: 375px;
+                width: 335px;
             }
         }
         label {
@@ -225,7 +244,9 @@
             },
             save(file) {
                 this.saving = file.id;
-                window.setTimeout(() => {
+
+                Client.put('/audio/' + file.id, file, (response) => {
+                    console.log(response);
                     this.saving = null;
                     const currentIndex = this.uploadedFiles.indexOf(file);
                     if (!this.uploadedFiles[currentIndex + 1]) {
@@ -236,8 +257,10 @@
                     } else {
                         this.editing = this.uploadedFiles[currentIndex + 1].id;
                     }
-
-                }, 1000);
+                }, (error) => {
+                    this.saving = null;
+                    console.error(error);
+                });
             }
         },
         components: {Message},
