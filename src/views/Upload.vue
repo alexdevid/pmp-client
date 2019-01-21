@@ -16,7 +16,8 @@
                    style="display: none">
         </form>
         <form v-if="showEditForm">
-            <div class="uploaded-form" v-for="file in uploadedFiles"
+            <div class="uploaded-form"
+                 v-for="file in uploadedFiles"
                  :class="[saving === file.id ? 'saving': '', editing === file.id ? 'editing' : '']">
                 <div class="page-loading">
                     <i class="fas fa-sync-alt fa-spin"></i>
@@ -39,36 +40,41 @@
                     </div>
                     <div class="clear"></div>
                 </div>
-                <div class="input-group">
-                    <label for="">File:</label>
-                    <input type="text" class="input" disabled :value="file.filename">
+                <div class="added-before" v-if="file.addedBefore">
+                    <p>
+                        This audio was added before by somebody. <br>
+                        It was added to your playlist.
+                    </p>
+                    <button class="button" @click.prevent="skip(file)">Okay</button>
                 </div>
-                <div class="input-group">
-                    <label :for="'artist[' + file.id + ']'">Artist:</label>
-                    <input type="text" class="input" v-model="file.artist.title" :name="'artist[' + file.id + ']'">
+                <div v-if="!file.addedBefore">
+                    <div class="input-group">
+                        <label for="">File:</label>
+                        <input type="text" class="input" disabled :value="file.filename">
+                    </div>
+                    <div class="input-group">
+                        <label :for="'artist[' + file.id + ']'">Artist:</label>
+                        <input type="text" class="input" v-model="file.artist.title" :name="'artist[' + file.id + ']'">
+                    </div>
+                    <div class="input-group">
+                        <label :for="'title[' + file.id + ']'">Title:</label>
+                        <input type="text" class="input" v-model="file.title" :name="'title[' + file.id + ']'">
+                    </div>
+                    <div class="input-group">
+                        <label :for="'album[' + file.id + ']'">Album:</label>
+                        <input type="text" class="input" v-model="file.album" :name="'album[' + file.id + ']'">
+                    </div>
+                    <div class="input-group">
+                        <label :for="'genre[' + file.id + ']'">Genre:</label>
+                        <input type="text" class="input" v-model="file.genre" :name="'genre[' + file.id + ']'">
+                    </div>
+                    <div class="input-group">
+                        <label :for="'year[' + file.id + ']'">Year:</label>
+                        <input type="text" class="input" v-model="file.year" :name="'year[' + file.id + ']'">
+                    </div>
+                    <button class="button" @click.prevent="save(file)">Save</button>
                 </div>
-                <div class="input-group">
-                    <label :for="'title[' + file.id + ']'">Title:</label>
-                    <input type="text" class="input" v-model="file.title" :name="'title[' + file.id + ']'">
-                </div>
-                <div class="input-group">
-                    <label :for="'album[' + file.id + ']'">Album:</label>
-                    <input type="text" class="input" v-model="file.album" :name="'album[' + file.id + ']'">
-                </div>
-                <div class="input-group">
-                    <label :for="'genre[' + file.id + ']'">Genre:</label>
-                    <input type="text" class="input" v-model="file.genre" :name="'genre[' + file.id + ']'">
-                </div>
-                <div class="input-group">
-                    <label :for="'year[' + file.id + ']'">Year:</label>
-                    <input type="text" class="input" v-model="file.year" :name="'year[' + file.id + ']'">
-                </div>
-                <button class="button" @click.prevent="save(file)">Save</button>
             </div>
-
-            <!--<div class="upload-progress" v-if="uploading && !uploaded" :style="{width: percentUploaded + '%'}">-->
-            <!--<div class="upload-progress-inner"></div>-->
-            <!--</div>-->
         </form>
     </div>
 </template>
@@ -117,6 +123,14 @@
 
             .page-loading {
                 display: flex;
+            }
+        }
+
+        .added-before {
+            padding: 0 40px;
+
+            .button {
+                float: left;
             }
         }
 
@@ -242,11 +256,21 @@
 
                 return false;
             },
+            skip(file) {
+                const currentIndex = this.uploadedFiles.indexOf(file);
+                if (!this.uploadedFiles[currentIndex + 1]) {
+                    this.editing = null;
+                    this.showEditForm = false;
+                    this.showUploadForm = true;
+                    this.error = null;
+                } else {
+                    this.editing = this.uploadedFiles[currentIndex + 1].id;
+                }
+            },
             save(file) {
                 this.saving = file.id;
 
                 Client.put('/audio/' + file.id, file, (response) => {
-                    console.log(response);
                     this.saving = null;
                     const currentIndex = this.uploadedFiles.indexOf(file);
                     if (!this.uploadedFiles[currentIndex + 1]) {
