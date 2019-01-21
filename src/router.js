@@ -67,11 +67,16 @@ export default new Router({
       name: "profile-music",
       component: () => import("./views/account/Favorites.vue")
     },
-    {
-      path: "/profile/playlists",
-      name: "playlists",
-      component: () => import("./views/account/Playlists.vue")
-    },
+      {
+          path: "/profile/playlists",
+          name: "playlists",
+          component: () => import("./views/account/Playlists.vue")
+      },
+      {
+          path: "/profile/playlist/add",
+          name: "playlist-add",
+          component: () => import("./views/account/AddPlaylist.vue")
+      },
     {
       path: "/profile/settings",
       name: "settings",

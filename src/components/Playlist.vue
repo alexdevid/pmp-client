@@ -1,6 +1,6 @@
 <template>
     <div class="playlist">
-        <Search v-if="tracks.length > 0"></Search>
+        <Search v-if="tracks.length > 0 && !remove"></Search>
         <div class="page-loading" v-if="tracks.length === 0">
             <i class="fas fa-sync-alt fa-spin"></i>
         </div>
@@ -23,18 +23,28 @@
                 </div>
                 <div class="track-artist">
                     <span v-if="track.artist">{{ track.artist.title }}</span>
-                    <span  v-if="!track.artist">Unknown</span>
+                    <span v-if="!track.artist">Unknown</span>
                 </div>
             </div>
             <div class="track-duration">
                 {{ track.durationFormatted }}
             </div>
             <div class="track-controls">
-                    <span class="player-control control-fav" @click.stop="handleFav(track)">
+                <span class="player-control player-control-checkbox" v-if="remove">
+                    <i class="fa fa-times" @click.stop="removeTrack(track)"></i>
+                </span>
+                <span class="player-control player-control-checkbox" v-if="checkboxes && !isChecked(track)">
+                    <i class="far fa-square" @click.stop="checkTrack(track)"></i>
+                </span>
+                <span class="player-control player-control-checkbox" v-if="checkboxes && isChecked(track)">
+                        <i class="far fa-check-square" @click.stop="uncheckTrack(track)"></i>
+                    </span>
+                <span class="player-control control-fav" @click.stop="handleFav(track)" v-if="!checkboxes && !remove">
                         <i class="far fa-heart" v-if="!track.favourite"></i>
                         <i class="fas fa-heart" v-if="track.favourite"></i>
                     </span>
-                <span class="player-control" @click.stop="false"><i class="fa fa-ellipsis-v"></i></span>
+                <span class="player-control" @click.stop="false" v-if="!checkboxes && !remove"><i
+                        class="fa fa-ellipsis-v"></i></span>
             </div>
             <div class="clear"></div>
         </div>
@@ -45,83 +55,107 @@
 </style>
 
 <script>
-import Search from "@/components/Search.vue";
-import Client from "../client";
-import Events from "../events";
+    import Search from "@/components/Search.vue";
+    import Client from "../client";
+    import Events from "../events";
 
-export default {
-  name: "Playlist",
-  props: ["tracks"],
-  data: function() {
-    return {
-      playing: null,
-      paused: null,
-      loaded: false
-    };
-  },
-  mounted() {
-    this.$root.$on("playerPaused", track => {
-      this.paused = track.id;
-    });
-    this.$root.$on("playerPlayNext", track => {
-      let next = null;
-      const index = this.tracks.indexOf(track);
-
-      if (index >= 0 && index < this.tracks.length - 1) {
-        next = this.tracks[index + 1];
-        this.play(next);
-      }
-    });
-    this.$root.$on("playerPlayPrev", track => {
-      let prev = null;
-      const index = this.tracks.indexOf(track);
-
-      if (index > 0) {
-        prev = this.tracks[index - 1];
-        this.play(prev);
-      }
-    });
-  },
-  methods: {
-    handleFav: function(track) {
-      Client.post(
-        "/audio/favorite/" + track.id,
-        {},
-        response => {
-          track.favourite = !track.favourite;
-          if (
-            track.favourite === false &&
-            this.$router.currentRoute.name === "profile-music"
-          ) {
-            this.tracks.splice(this.tracks.indexOf(track), 1);
-          }
+    export default {
+        name: "Playlist",
+        props: ["tracks", "checkboxes", 'remove'],
+        data: function () {
+            return {
+                checked: [],
+                playing: null,
+                paused: null,
+                loaded: false
+            };
         },
-        error => {
-          console.error(error);
+        mounted() {
+            this.$root.$on('add-to-playlist', () => {
+                this.$emit('audioAdd', this.checked);
+            });
+            this.$root.$on("playerPaused", track => {
+                this.paused = track.id;
+            });
+            this.$root.$on("playerPlayNext", track => {
+                let next = null;
+                const index = this.tracks.indexOf(track);
+
+                if (index >= 0 && index < this.tracks.length - 1) {
+                    next = this.tracks[index + 1];
+                    this.play(next);
+                }
+            });
+            this.$root.$on("playerPlayPrev", track => {
+                let prev = null;
+                const index = this.tracks.indexOf(track);
+
+                if (index > 0) {
+                    prev = this.tracks[index - 1];
+                    this.play(prev);
+                }
+            });
+        },
+        methods: {
+            isChecked(track) {
+                return this.checked.indexOf(track) !== -1;
+            },
+            checkTrack(track) {
+                if (!this.isChecked(track)) {
+                    this.$emit(Events.PLAYLIST.AUDIO_CHECK, track);
+                    this.checked.push(track);
+                }
+            },
+            uncheckTrack(track) {
+                if (this.isChecked(track)) {
+                    this.$emit(Events.PLAYLIST.AUDIO_UNCHECK, track);
+                    this.checked = this.checked.filter(function (value, index, arr) {
+                        return value !== track;
+                    });
+                }
+            },
+            removeTrack(track) {
+                this.$emit('audioRemove', track);
+            },
+            handleFav: function (track) {
+                Client.post(
+                    "/audio/favorite/" + track.id,
+                    {},
+                    response => {
+                        track.favourite = !track.favourite;
+                        if (
+                            track.favourite === false &&
+                            this.$router.currentRoute.name === "profile-music"
+                        ) {
+                            this.tracks.splice(this.tracks.indexOf(track), 1);
+                        }
+                    },
+                    error => {
+                        console.error(error);
+                    }
+                );
+            },
+            play(track) {
+                if (this.playing && this.playing === track.id && !this.paused) {
+                    this.$root.$emit("audioPause", track);
+                    this.paused = track.id;
+                    return;
+                }
+
+                if (this.playing && this.playing === track.id && this.paused) {
+                    this.$root.$emit(Events.PLAYER.PLAY, track);
+                    this.paused = null;
+                    this.playing = track.id;
+                    return;
+                }
+
+                this.$root.$emit(Events.PLAYER.PLAY, track);
+                this.paused = null;
+                this.playing = track.id;
+            }
+        },
+        components: {
+            Search
         }
-      );
-    },
-    play(track) {
-      if (this.playing && this.playing === track.id && !this.paused) {
-        this.$root.$emit("audioPause", track);
-        this.paused = track.id;
-        return;
-      }
-
-      if (this.playing && this.playing === track.id && this.paused) {
-        this.$root.$emit(Events.PLAYER.PLAY, track);
-        this.paused = null;
-        this.playing = track.id;
-        return;
-      }
-
-      this.$root.$emit(Events.PLAYER.PLAY, track);
-      this.paused = null;
-      this.playing = track.id;
-    }
-  },
-  components: {
-    Search
-  }
-};
+    };
 </script>
