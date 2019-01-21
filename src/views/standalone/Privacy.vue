@@ -1,0 +1,5 @@
+<template>
+  <div class="privacy-page">
+    <h1>PRIVACY</h1>
+  </div>
+</template>
