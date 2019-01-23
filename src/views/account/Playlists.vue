@@ -11,7 +11,7 @@
         <div class="page-loading page-loading-fixed" v-if="!playlists">
             <i class="fas fa-sync-alt fa-spin"></i>
         </div>
-        <div class="playlist-thumb" v-for="playlist in playlists">
+        <div class="playlist-thumb" v-for="playlist in playlists" @click="openPlaylist(playlist.id)">
             <div class="playlist-thumb-image">
                 <img src="../../assets/userpic.jpg" alt="">
             </div>
@@ -90,6 +90,9 @@
         methods: {
             addPlaylist() {
                 this.$router.push('/profile/playlist/add');
+            },
+            openPlaylist(id) {
+                this.$router.push('/playlist/' + id);
             }
         },
         mounted() {

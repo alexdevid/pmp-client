@@ -1,6 +1,6 @@
 <template>
     <div class="playlist">
-        <Search v-if="tracks.length > 0 && !remove"></Search>
+        <Search v-if="tracks.length > 0 && !remove && !hideSearch"></Search>
         <div class="page-loading" v-if="tracks.length === 0">
             <i class="fas fa-sync-alt fa-spin"></i>
         </div>
@@ -64,7 +64,7 @@
 
     export default {
         name: "Playlist",
-        props: ["tracks", "checkboxes", 'remove'],
+        props: ["tracks", "checkboxes", 'remove', 'hideSearch'],
         data: function () {
             return {
                 checked: [],
