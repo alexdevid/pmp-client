@@ -12,7 +12,8 @@
                     <i class="fa fa-play" v-if="playing !== track.id || !playing || paused && playing === track.id"></i>
                     <i class="fa fa-pause" v-if="!paused && playing === track.id"></i>
                 </div>
-                <div class="track-play-overlay track-play-overlay-playing" v-if="playing === track.id && loading !== track.id">
+                <div class="track-play-overlay track-play-overlay-playing"
+                     v-if="playing === track.id && loading !== track.id">
                     <i class="fa fa-play" v-if="playing !== track.id || !playing || paused && playing === track.id"></i>
                     <i class="fa fa-pause" v-if="!paused && playing === track.id"></i>
                 </div>
@@ -78,6 +79,11 @@
             this.$root.$on(Events.PLAYER.CAN_PLAY, (id) => {
                 this.loading = null;
             });
+            this.$root.$on(Events.PLAYER.SHUFFLE, () => {
+                console.log('PLAYLIST-SHUFFLE');
+                this.shuffle();
+                this.$forceUpdate()
+            });
             this.$root.$on('add-to-playlist', () => {
                 this.$emit('audioAdd', this.checked);
             });
@@ -104,6 +110,12 @@
             });
         },
         methods: {
+            shuffle() {
+                for (let i = this.tracks.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.tracks[i], this.tracks[j]] = [this.tracks[j], this.tracks[i]];
+                }
+            },
             isChecked(track) {
                 return this.checked.indexOf(track) !== -1;
             },

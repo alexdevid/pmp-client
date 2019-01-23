@@ -4,11 +4,6 @@
             <TopNav></TopNav>
         </div>
         <Player v-if="authorized"></Player>
-        <div class="navigation" v-if="authorized">
-            <router-link to="/profile/music">My Music</router-link>
-            <router-link to="/profile/playlists">My Playlists</router-link>
-            <router-link to="/upload" class="audio-upload"><i class="fa fa-cloud-upload-alt"></i> Upload</router-link>
-        </div>
         <div class="content">
             <div class="page-loading" v-if="!authorized">
                 <i class="fas fa-sync-alt fa-spin"></i>
@@ -102,32 +97,5 @@
         left: 0;
         background-color: #2f4f4f;
         z-index: 1001;
-    }
-
-    .navigation {
-        margin: 0 10px 15px;
-        display: flex;
-        align-items: center;
-        border-bottom: 1px solid #7d7d7d;
-
-        a {
-            text-transform: uppercase;
-            display: inline-block;
-            margin-right: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid transparent;
-            color: #7d7d7d;
-
-            &.router-link-exact-active {
-                color: #000;
-                pointer-events: none;
-                border-color: #000;
-            }
-        }
-
-        .audio-upload {
-            margin-left: auto;
-            margin-right: 0;
-        }
     }
 </style>

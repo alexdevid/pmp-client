@@ -1,29 +1,9 @@
-# pmp-client
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+#TODO
+- edit audio if it was uploaded by user
+- player controls: 
+    - repeat
+- radio
+- audio pagination
+- limit user genres and artists
+- SEARCH
+- FIND BUGS AND FIX

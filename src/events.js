@@ -9,7 +9,8 @@ export default {
     },
     PLAYER: {
         PLAY: 'player-play',
-        CAN_PLAY: 'player-can-play'
+        CAN_PLAY: 'player-can-play',
+        SHUFFLE: 'player-shuffle'
     },
     PLAYLIST: {
         AUDIO_CHECK: 'audio-checked',

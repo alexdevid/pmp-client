@@ -236,6 +236,7 @@
                 this.showUploadForm = false;
                 this.showLoader = true;
                 Client.post('/audio/upload', data, (response) => {
+                    console.log(response);
                     this.uploadedFiles = response;
                     this.showEditForm = true;
                     this.editing = this.uploadedFiles[0].id;

@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="player-duration" v-if="audio">
-                <span class="track-duration">00:00</span>
+                <span class="track-duration" @click="showCurrentTime = !showCurrentTime">{{ getPlayerTime() }}</span>
             </div>
             <div class="player-volume" v-if="audio">
                 <div class="player-vol-control player-control" @click="mute()" v-if="volume > 0">
@@ -37,7 +37,7 @@
                             @callback="changeVolume" :style="{padding: '0', height: '3px'}"></vue-slider>
             </div>
             <div class="player-controls" v-if="audio">
-                <span class="player-control"><i class="fa fa-random"></i></span>
+                <span class="player-control" @click="shuffle()"><i class="fa fa-random"></i></span>
                 <span class="player-control"><i class="fa fa-redo"></i></span>
 
                 <span class="player-control" @click="playPrev"><i class="fa fa-backward"></i></span>
@@ -77,6 +77,7 @@
                 audio: this.current,
                 playing: false,
                 loading: null,
+                showCurrentTime: true
             };
         },
         mounted() {
@@ -143,6 +144,26 @@
             },
             changePosition() {
                 this.audioSource.currentTime = this.progress * this.audioSource.duration / 100;
+            },
+            shuffle() {
+                console.log('PLAYER-SHUFFLE');
+                this.$root.$emit(Events.PLAYER.SHUFFLE);
+            },
+            getPlayerTime() {
+                if (this.showCurrentTime) {
+                    return this.secondsToTime(this.audioSource.currentTime);
+                }
+
+                return this.secondsToTime(this.audioSource.duration - this.audioSource.currentTime);
+            },
+            secondsToTime(seconds) {
+                let date = new Date(null);
+                date.setSeconds(seconds);
+                if (seconds / 3600 >= 1) {
+                    return date.toISOString().substr(11, 8);
+                }
+
+                return date.toISOString().substr(14, 5);
             }
         },
         components: {vueSlider}
@@ -183,6 +204,10 @@
             padding-left: 15px;
             .responsive(450px, { width: 335px; });
         }
+        .track-duration {
+            cursor: pointer;
+        }
+
         &-track {
             float: left;
             width: 500px;
