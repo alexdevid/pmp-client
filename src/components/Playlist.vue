@@ -12,9 +12,12 @@
                     <i class="fa fa-play" v-if="playing !== track.id || !playing || paused && playing === track.id"></i>
                     <i class="fa fa-pause" v-if="!paused && playing === track.id"></i>
                 </div>
-                <div class="track-play-overlay track-play-overlay-playing" v-if="playing === track.id">
+                <div class="track-play-overlay track-play-overlay-playing" v-if="playing === track.id && loading !== track.id">
                     <i class="fa fa-play" v-if="playing !== track.id || !playing || paused && playing === track.id"></i>
                     <i class="fa fa-pause" v-if="!paused && playing === track.id"></i>
+                </div>
+                <div class="track-play-overlay track-play-overlay-playing" v-if="loading === track.id">
+                    <i class="fas fa-sync-alt fa-spin"></i>
                 </div>
             </div>
             <div class="track-info">
@@ -67,10 +70,14 @@
                 checked: [],
                 playing: null,
                 paused: null,
-                loaded: false
+                loaded: false,
+                loading: null
             };
         },
         mounted() {
+            this.$root.$on(Events.PLAYER.CAN_PLAY, (id) => {
+                this.loading = null;
+            });
             this.$root.$on('add-to-playlist', () => {
                 this.$emit('audioAdd', this.checked);
             });
@@ -136,12 +143,14 @@
                 );
             },
             play(track) {
+                //pause current
                 if (this.playing && this.playing === track.id && !this.paused) {
                     this.$root.$emit("audioPause", track);
                     this.paused = track.id;
                     return;
                 }
 
+                //remove pause from current
                 if (this.playing && this.playing === track.id && this.paused) {
                     this.$root.$emit(Events.PLAYER.PLAY, track);
                     this.paused = null;
@@ -152,6 +161,7 @@
                 this.$root.$emit(Events.PLAYER.PLAY, track);
                 this.paused = null;
                 this.playing = track.id;
+                this.loading = track.id;
             }
         },
         components: {

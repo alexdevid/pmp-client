@@ -8,7 +8,8 @@ export default {
         UNKNOWN: 'user-auth-unknown'
     },
     PLAYER: {
-        PLAY: 'player-play'
+        PLAY: 'player-play',
+        CAN_PLAY: 'player-can-play'
     },
     PLAYLIST: {
         AUDIO_CHECK: 'audio-checked',

@@ -27,8 +27,14 @@
                 <span class="track-duration">00:00</span>
             </div>
             <div class="player-volume" v-if="audio">
-                <div class="player-vol-control player-control"><i class="fa fa-volume-up"></i></div>
-                <div class="player-volume-bar"></div>
+                <div class="player-vol-control player-control" @click="mute()" v-if="volume > 0">
+                    <i class="fa fa-volume-up"></i>
+                </div>
+                <div class="player-vol-control player-control" @click="unmute()" v-if="volume === 0">
+                    <i class="fa fa-volume-mute"></i>
+                </div>
+                <vue-slider v-model="volume" :width="100" :height="'3px'" :tooltip="false" :speed="0"
+                            @callback="changeVolume" :style="{padding: '0', height: '3px'}"></vue-slider>
             </div>
             <div class="player-controls" v-if="audio">
                 <span class="player-control"><i class="fa fa-random"></i></span>
@@ -46,37 +52,65 @@
                 <span class="player-control" @click="playNext"><i class="fa fa-forward"></i></span>
             </div>
         </div>
-        <div class="player-container">
-            <div class="player-progress"></div>
+        <div class="player-container player-progress">
+            <div class="player-progress-buffered" :style="{width: buffered + '%'}"></div>
+            <vue-slider v-model="progress" :width="'100%'" :height="'3px'" :tooltip="false" :speed="0"
+                        @callback="changePosition" :style="{padding: '0', height: '3px'}"></vue-slider>
         </div>
     </div>
 </template>
 
 <script>
     import Events from "../events";
+    import vueSlider from 'vue-slider-component/src/vue2-slider.vue'
 
     export default {
         name: "Player",
         data: function () {
             return {
+                volume: 100,
+                volumeBeforeMute: 100,
+                progress: 0,
+                buffered: 0,
+                currentTime: 0,
                 audioSource: null,
                 audio: this.current,
-                playing: false
+                playing: false,
+                loading: null,
             };
         },
         mounted() {
             this.audioSource = new Audio();
+            this.audioSource.volume = this.volume / 100;
+
             this.$root.$on(Events.PLAYER.PLAY, track => {
                 this.play(track);
             });
             this.$root.$on("audioPause", () => {
                 this.pause();
             });
+            this.audioSource.addEventListener('canplay', () => {
+                this.$root.$emit(Events.PLAYER.CAN_PLAY);
+            });
+            this.audioSource.addEventListener('timeupdate', () => {
+                this.progress = this.audioSource.currentTime * 100 / this.audioSource.duration;
+                if (this.progress === 100) {
+                    this.playNext();
+                }
+            });
+            this.audioSource.addEventListener('progress', () => {
+                if (this.audioSource.buffered.length) {
+                    this.loading = null;
+                    let loaded = 100 * this.audioSource.buffered.end(0);
+                    this.buffered = loaded.toFixed(2) / this.audioSource.duration;
+                }
+            });
         },
         methods: {
             play(track) {
-                console.log(track);
                 if (!this.audio || this.audio.id !== track.id) {
+                    this.loading = track.id;
+                    this.buffered = 0;
                     this.audio = track;
                     this.audioSource.src = track.src;
                 }
@@ -94,8 +128,24 @@
             },
             playPrev() {
                 this.$root.$emit("playerPlayPrev", this.audio);
+            },
+            mute() {
+                this.volumeBeforeMute = this.volume;
+                this.audioSource.volume = 0;
+                this.volume = 0;
+            },
+            unmute() {
+                this.audioSource.volume = this.volumeBeforeMute / 100;
+                this.volume = this.volumeBeforeMute;
+            },
+            changeVolume() {
+                this.audioSource.volume = this.volume / 100;
+            },
+            changePosition() {
+                this.audioSource.currentTime = this.progress * this.audioSource.duration / 100;
             }
-        }
+        },
+        components: {vueSlider}
     };
 </script>
 <style lang="less">
@@ -173,11 +223,29 @@
             display: flex;
             align-items: center;
             .responsive(450px, { display: none; });
-            &-bar {
+            .vue-slider {
+                cursor: pointer;
+                border-radius: 2px;
+                height: 3px;
+            }
+            &:hover {
+                .vue-slider-dot-handle {
+                    opacity: 1;
+                }
+            }
+            .vue-slider-dot-handle {
+                opacity: 0;
+                width: 10px !important;
+                height: 10px !important;
+                background-color: #2f4f4f !important;
+                margin-top: -4px;
+                transition-duration: .3s;
+            }
+            .vue-slider-process {
                 height: 3px;
                 width: 100px;
                 border-radius: 2px;
-                background-color: #a1a1a1;
+                background-color: #2f4f4f;
                 display: inline-block;
             }
         }
@@ -197,11 +265,30 @@
             );
         }
         &-progress {
-            width: 100%;
-            height: 3px;
-            background-color: #c1c1c1;
-            margin-top: 7px;
-            .responsive(450px, { position: fixed; top: 100px; left: 0; });
+            padding-top: 7px;
+            position: relative;
+
+            &-buffered {
+                width: 940px;
+                height: 3px;
+                position: absolute;
+                background-color: #ababab;
+                top: 7px;
+                left: 10px;
+            }
+            .vue-slider-dot-handle {
+                opacity: 0;
+            }
+            .vue-slider {
+                cursor: pointer;
+                border-radius: 2px;
+                height: 3px;
+                background: none;
+            }
+            .vue-slider-process {
+                background-color: #2f4f4f;
+                .responsive(450px, { position: fixed; top: 100px; left: 0; });
+            }
         }
         &-control {
             color: #a1a1a1;
