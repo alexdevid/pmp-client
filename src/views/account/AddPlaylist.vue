@@ -85,7 +85,7 @@
 <script>
     import Playlist from "@/components/Playlist.vue";
     import Modal from "@/components/Modal.vue";
-    import Client from "../../client";
+    import Client from "../../services/api-client";
     import Events from "../../events";
 
     export default {
@@ -151,7 +151,7 @@
             }
         },
         mounted() {
-            Client.get("/audio/" + this.$store.state.user.username,
+            Client.get("/audio/" + this.$store.state.user.username, {},
                 response => {
                     this.tracks = response.data;
                 },

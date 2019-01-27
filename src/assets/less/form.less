@@ -48,8 +48,9 @@
     text-decoration: none;
     background: #2f4f4f;
     color: #fff;
-    border: 0;
+    border: 1px solid #2f4f4f;
     border-radius: 2px;
+    transition-duration: 0s;
 
     &:active {
         padding-top: 6px;
@@ -60,6 +61,18 @@
         background-color: fadeout(#2f4f4f, 10%);
         text-decoration: none;
         color: #fff;
+    }
+
+    &-alt {
+        background: #fff;
+        border-color: #cecece;
+        color: #7d7d7d;
+
+        &:hover {
+            background-color: fadeout(#7d7d7d, 90%);
+            border-color: #cecece;
+            color: #7d7d7d;
+        }
     }
 }
 

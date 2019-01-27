@@ -1,14 +1,14 @@
 <template>
     <div id="app" v-bind:class="{ homepage: $router.currentRoute.name === 'home' }">
-        <div class="header" v-if="authorized">
+        <div class="header">
             <TopNav></TopNav>
         </div>
-        <Player v-if="authorized"></Player>
-        <div class="content">
-            <div class="page-loading" v-if="!authorized">
-                <i class="fas fa-sync-alt fa-spin"></i>
-            </div>
-            <router-view v-if="authorized"></router-view>
+        <Player></Player>
+        <div class="page-loading" v-if="!displayView">
+            <i class="fas fa-sync-alt fa-spin"></i>
+        </div>
+        <div class="content" v-if="displayView">
+            <router-view></router-view>
         </div>
         <Message v-if="showLoginMessage" :type="'error'">
             <div slot="header">Authorization Error</div>
@@ -26,7 +26,7 @@
     import Player from "@/components/Player.vue";
     import TopNav from "@/components/TopNav.vue";
     import Message from "@/components/Message.vue";
-    import Client from "./client.js";
+    import Client from "./services/api-client.js";
     import Events from "./events";
 
     export default {
@@ -34,35 +34,27 @@
         data: function () {
             return {
                 authorized: false,
-                showLoginMessage: false
+                showLoginMessage: false,
+                displayView: false
             };
         },
         mounted() {
-            this.$root.$on(Events.PLAYER.PLAY, track => {
-            });
             this.$root.$on("userLogout", () => {
                 this.logout();
             });
             this.$root.$on(Events.AUTHORIZATION.SUCCESS, username => {
-                console.log(Events.AUTHORIZATION.SUCCESS);
                 this.authorized = true;
                 this.showLoginMessage = false;
-                this.$store.state.user = {username: username};
             });
             this.$root.$on(Events.AUTHORIZATION.FAILURE, username => {
-                console.log(Events.AUTHORIZATION.FAILURE);
                 this.authorized = false;
-                this.$store.state.user = null;
                 this.showLoginMessage = true;
             });
-            this.$root.$on(Events.AUTHORIZATION.UNKNOWN, () => {
-                console.log(Events.AUTHORIZATION.UNKNOWN);
-                this.$router.push("/login");
+            this.$root.$on(Events.AUTHORIZATION.COMPLETE, () => {
+                this.displayView = true;
             });
         },
         methods: {
-            checkLogin() {
-            },
             logout() {
                 this.authorized = false;
                 this.$store.state.user = null;

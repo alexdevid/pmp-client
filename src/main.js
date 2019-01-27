@@ -3,31 +3,49 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import VueResource from "vue-resource";
-import Client from "./client";
-import Events from "./events";
+import auth from './services/authorization';
+import client from './services/api-client';
+import events from './events';
 
 Vue.config.productionTip = false;
 Vue.use(VueResource);
 
 new Vue({
-  router,
-  store,
-  mounted() {
-    if (localStorage.hasOwnProperty("credentials")) {
-      const credentials = JSON.parse(localStorage.getItem("credentials"));
-      //check authorization and get new token
-      Client.getToken(
-        { username: credentials.username, password: credentials.password },
-        () => {
-          this.$root.$emit(Events.AUTHORIZATION.SUCCESS, credentials.username);
-        },
-        () => {
-          this.$root.$emit(Events.AUTHORIZATION.FAILURE, credentials.username);
+    router,
+    store,
+    mounted() {
+
+        this.$root.$on(events.AUTHORIZATION.SUCCESS, user => {
+            this.$store.state.user = user;
+            this.$root.$emit(events.AUTHORIZATION.COMPLETE, user);
+        });
+        this.$root.$on(events.AUTHORIZATION.FAILURE, username => {
+            this.$store.state.user = null;
+        });
+        this.$root.$on(events.AUTHORIZATION.LOGOUT, () => {
+            auth.logout();
+            client.setToken(null);
+            this.$store.state.user = null;
+            this.$router.push('/');
+        });
+
+        const promise = auth.checkToken();
+        if (!promise) {
+            this.$root.$emit(events.AUTHORIZATION.COMPLETE, null);
+        } else {
+            promise.then(
+                response => {
+                    this.$root.$emit(events.AUTHORIZATION.SUCCESS, {
+                        username: response.body.username,
+                        roles: response.body.roles
+                    });
+                }, error => {
+                    this.$root.$emit(events.AUTHORIZATION.FAILURE, username)
+                }
+            );
         }
-      );
-    } else {
-      this.$root.$emit(Events.AUTHORIZATION.UNKNOWN);
-    }
-  },
-  render: h => h(App)
+    },
+    created() {
+    },
+    render: h => h(App)
 }).$mount("#app");

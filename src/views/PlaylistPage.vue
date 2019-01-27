@@ -11,7 +11,7 @@
 <script>
     import Playlist from "@/components/Playlist.vue";
     import PlaylistHeader from "@/components/PlaylistHeader.vue";
-    import Client from "../client";
+    import Client from "../services/api-client";
 
     export default {
         name: "PlaylistPage",
@@ -24,14 +24,14 @@
             };
         },
         created: function () {
-            Client.get('/audio/playlist/' + this.$route.params.id, response => {
+            Client.get('/audio/playlist/' + this.$route.params.id, {}, response => {
                 this.tracks = response.data;
                 if (response.data.length === 0) {
                     this.empty = true;
                 }
             }, error => {console.log(error)});
 
-            Client.get('/playlist/' + this.$route.params.id, response => {
+            Client.get('/playlist/' + this.$route.params.id, {}, response => {
                 console.log(response);
                 this.playlist = response.data;
             }, error => {console.log(error)});

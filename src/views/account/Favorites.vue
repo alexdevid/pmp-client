@@ -9,7 +9,7 @@
 
 <script>
     import Playlist from "@/components/Playlist.vue";
-    import Client from "../../client";
+    import Client from "../../services/api-client";
 
     export default {
         name: "Favorites",
@@ -21,7 +21,7 @@
             };
         },
         mounted() {
-            Client.get("/audio/" + this.$store.state.user.username,
+            Client.get("/audio/" + this.$store.state.user.username, {},
                 response => {
                     if (response.data.length === 0) {
                         this.empty = true;

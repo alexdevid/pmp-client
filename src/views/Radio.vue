@@ -4,15 +4,18 @@
         <div class="page-loading" v-if="!loaded">
             <i class="fas fa-sync-alt fa-spin"></i>
         </div>
-        <div class="track" v-for="station in stations" @click="play(station)" v-bind:class="{active: playing === station.id}">
+        <div class="track" v-for="station in stations" @click="play(station)"
+             v-bind:class="{active: playing === station.id}">
             <div class="track-image">
                 <img src="../assets/trackpic.jpg" alt="">
                 <div class="track-play-overlay">
-                    <i class="fa fa-play" v-if="playing !== station.id || !playing || paused && playing === station.id"></i>
+                    <i class="fa fa-play"
+                       v-if="playing !== station.id || !playing || paused && playing === station.id"></i>
                     <i class="fa fa-pause" v-if="!paused && playing === station.id"></i>
                 </div>
                 <div class="track-play-overlay track-play-overlay-playing" v-if="playing === station.id">
-                    <i class="fa fa-play" v-if="playing !== station.id || !playing || paused && playing === station.id"></i>
+                    <i class="fa fa-play"
+                       v-if="playing !== station.id || !playing || paused && playing === station.id"></i>
                     <i class="fa fa-pause" v-if="!paused && playing === station.id"></i>
                 </div>
             </div>
@@ -42,39 +45,41 @@
 <style src="../assets/less/playlist.less" lang="less">
 </style>
 <script>
-import Search from "@/components/Search.vue";
-import Events from "../events";
+    import Search from "@/components/Search.vue";
+    import client from "../services/api-client";
+    import Events from "../events";
 
-export default {
-  name: "radio",
-  data: function() {
-    return {
-      playing: null,
-      paused: null,
-      loaded: false,
-      stations: []
+    export default {
+        name: "radio",
+        data: function () {
+            return {
+                playing: null,
+                paused: null,
+                loaded: false,
+                stations: []
+            };
+        },
+        created: function () {
+            client.get('/radio').then(
+                response => {
+                    this.stations = response.body;
+                    this.loaded = true;
+                }, error => {
+                    console.error(error);
+                });
+        },
+        methods: {
+            handleFav: function (station) {
+                station.favourite = !station.favourite;
+            },
+            play(station) {
+                this.$root.$emit(Events.PLAYER.PLAY, station);
+                this.paused = null;
+                this.playing = station.id;
+            }
+        },
+        components: {
+            Search
+        }
     };
-  },
-  created: function() {
-    this.$http
-      .get("http://music.test/index.php/api/radio")
-      .then(function(response) {
-        this.stations = response.data;
-        this.loaded = true;
-      });
-  },
-  methods: {
-    handleFav: function(station) {
-      station.favourite = !station.favourite;
-    },
-    play(station) {
-      this.$root.$emit(Events.PLAYER.PLAY, station);
-      this.paused = null;
-      this.playing = station.id;
-    }
-  },
-  components: {
-    Search
-  }
-};
 </script>

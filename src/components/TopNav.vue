@@ -1,29 +1,38 @@
 <template>
     <div class="top-nav">
         <router-link to="/" class="top-nav-item">
-            <i class="fa fa-music"></i> Music
+            Music
         </router-link>
         <router-link to="/radio" class="top-nav-item">
-            <i class="fa fa-broadcast-tower"></i> Radio
+            Radio
         </router-link>
         <!--<router-link to="/users" class="top-nav-item">-->
             <!--<i class="fa fa-users"></i> Users-->
         <!--</router-link>-->
         <router-link to="/profile" class="top-nav-item top-nav-item-user" v-if="$store.state.user !== null">
-            <i class="fa fa-user"></i> {{ $store.state.user.username }}
+            {{ $store.state.user.username }} <i class="fa fa-user"></i>
         </router-link>
-        <router-link to="/login" class="top-nav-item top-nav-item-user" v-if="$store.state.user === null">
+        <router-link to="/login" class="top-nav-item top-nav-item-user" v-if="$store.state.user === null && authorized">
             Login
         </router-link>
-        <router-link to="/upload" class="top-nav-item"><i class="fa fa-cloud-upload-alt"></i> Upload</router-link>
     </div>
 </template>
 
 <script>
+    import events from '../events';
+
     export default {
         name: "TopNav",
         components: {},
+        data: function () {
+            return {
+                authorized: false
+            };
+        },
         mounted() {
+            this.$root.$on(events.AUTHORIZATION.COMPLETE, user => {
+                this.authorized = true;
+            });
         }
     };
 </script>
@@ -34,13 +43,10 @@
         margin: 0 auto;
         display: flex;
 
-        .router-link-exact-active {
-
-        }
-
         &-item {
             padding: 14px 10px;
             color: #fff;
+            display: inline-block;
 
             &-user {
                 margin-left: auto;

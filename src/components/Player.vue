@@ -7,8 +7,8 @@
                         <img src="../assets/trackpic.jpg" v-if="!audio.cover">
                         <img :src="audio.cover" v-if="audio.cover">
                         <div class="audio-fav">
-                            <i class="far fa-heart"></i>
-                            <!--<i class="fa fa-pause"></i>-->
+                            <i class="far fa-heart" v-if="!audio.favourite"></i>
+                            <i class="fas fa-heart" v-if="audio.favourite"></i>
                         </div>
                     </div>
                     <div class="track-info">

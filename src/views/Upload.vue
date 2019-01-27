@@ -1,83 +1,164 @@
 <template>
     <div class="upload-page">
-        <Message v-if="error" :type="'error relative'">
-            <div slot="body" v-html="error"></div>
-        </Message>
-        <div class="page-loading" v-if="showLoader">
-            <i class="fas fa-sync-alt fa-spin"></i>
-        </div>
-        <form enctype="multipart/form-data" novalidate class="upload-form" v-if="showUploadForm">
+        <form enctype="multipart/form-data" novalidate class="upload-form"
+              v-if="filesToUpload.length === 0 && !showEditForm">
             <p>You can upload not more that 4 files at once</p>
             <p>Each file should be less than 50MB</p>
             <p>Allowed file types are `mp3` and `m4a`</p>
-            <a href="#" class="button file-select" v-if="!uploading && !uploaded" @click="$refs.file.click()">Select files</a>
-            <input type="file" multiple name="audio" :disabled="uploading" ref="file"
-                   @change="onAddFile($event.target.name, $event.target.files); fileCount = $event.target.files.length"
-                   style="display: none">
+            <a href="#" class="button file-select" @click="$refs.file.click()">Select files</a>
+            <input type="file" multiple name="audio" ref="file" @change="onAddFiles($event.target.files)">
         </form>
+
+        <UploadProgress @upload-complete="onComplete" @upload-error="onError" @upload-finish="onFinish"
+                        v-for="uploadedFile in filesToUpload" :file="uploadedFile">
+        </UploadProgress>
+
         <form v-if="showEditForm">
-            <div class="uploaded-form"
-                 v-for="file in uploadedFiles"
-                 :class="[saving === file.id ? 'saving': '', editing === file.id ? 'editing' : '']">
+            <div class="uploaded-form" :class="[saving ? 'saving': '', audio ? 'editing' : '']">
                 <div class="page-loading">
                     <i class="fas fa-sync-alt fa-spin"></i>
                 </div>
                 <div class="track">
                     <div class="track-image">
-                        <img src="../assets/trackpic.jpg" v-if="!file.cover">
-                        <img :src="file.cover" v-if="file.cover">
+                        <img src="../assets/trackpic.jpg" v-if="!audio.cover">
+                        <img :src="audio.cover" v-if="audio.cover">
                     </div>
                     <div class="track-info">
                         <div class="track-title">
-                            {{ file.title }}
+                            {{ audio.title }}
                         </div>
                         <div class="track-artist">
-                            <span v-if="file.artist">{{ file.artist.title }}</span>
+                            <span v-if="audio.artist">{{ audio.artist.title }}</span>
                         </div>
                     </div>
                     <div class="track-duration">
-                        {{ file.durationFormatted }}
+                        {{ audio.durationFormatted }}
                     </div>
                     <div class="clear"></div>
                 </div>
-                <div class="added-before" v-if="file.addedBefore">
+                <div class="added-before" v-if="audio.addedBefore">
                     <p>
                         This audio was added before by somebody. <br>
                         It was added to your playlist.
                     </p>
-                    <button class="button" @click.prevent="skip(file)">Okay</button>
+                    <button class="button" @click.prevent="skip(audio)">Okay</button>
                 </div>
-                <div v-if="!file.addedBefore">
+                <div v-if="!audio.addedBefore">
                     <div class="input-group">
-                        <label for="">File:</label>
-                        <input type="text" class="input" disabled :value="file.filename">
+                        <label>File:</label>
+                        <input type="text" class="input" disabled :value="audio.filename">
                     </div>
                     <div class="input-group">
-                        <label :for="'artist[' + file.id + ']'">Artist:</label>
-                        <input type="text" class="input" v-model="file.artist.title" :name="'artist[' + file.id + ']'">
+                        <label for="title">Title:</label>
+                        <input type="text" class="input" v-model="audio.title" id="title">
                     </div>
                     <div class="input-group">
-                        <label :for="'title[' + file.id + ']'">Title:</label>
-                        <input type="text" class="input" v-model="file.title" :name="'title[' + file.id + ']'">
+                        <label for="artist">Artist:</label>
+                        <input type="text" class="input" v-model="audio.artist.title" id="artist">
                     </div>
                     <div class="input-group">
-                        <label :for="'album[' + file.id + ']'">Album:</label>
-                        <input type="text" class="input" v-model="file.album" :name="'album[' + file.id + ']'">
+                        <label for="album">Album:</label>
+                        <input type="text" class="input" v-model="audio.album" id="album">
                     </div>
                     <div class="input-group">
-                        <label :for="'genre[' + file.id + ']'">Genre:</label>
-                        <input type="text" class="input" v-model="file.genre" :name="'genre[' + file.id + ']'">
+                        <label for="genre">Genre:</label>
+                        <input type="text" class="input" v-model="audio.genre" id="genre">
                     </div>
                     <div class="input-group">
-                        <label :for="'year[' + file.id + ']'">Year:</label>
-                        <input type="text" class="input" v-model="file.year" :name="'year[' + file.id + ']'">
+                        <label for="year">Year:</label>
+                        <input type="text" class="input" v-model="audio.year" id="year">
                     </div>
-                    <button class="button" @click.prevent="save(file)">Save</button>
+                    <button class="button" @click.prevent="save(audio)">Save</button>
                 </div>
             </div>
         </form>
     </div>
 </template>
+
+<script>
+    import events from '../events';
+    import client from '../services/api-client';
+    import Message from '@/components/Message.vue';
+    import UploadProgress from '@/components/upload/Progress.vue';
+
+    const MAX_UPLOADED_FILES = 4;
+
+    export default {
+        name: 'Upload',
+        data: function () {
+            return {
+                showEditForm: false,
+                saving: null,
+                audio: null,
+
+                filesToUpload: [],
+                uploadedFiles: [],
+                uploadCompleteCount: 0,
+            };
+        },
+        mounted() {
+
+        },
+        methods: {
+            onComplete(file) {
+                this.uploadedFiles.push(file);
+            },
+            onError(error) {
+                console.error(error);
+            },
+            onFinish() {
+                this.uploadCompleteCount++;
+                if (this.uploadCompleteCount === this.filesToUpload.length) {
+                    this.onFullUploadComplete();
+                }
+            },
+            onFullUploadComplete() {
+                this.showEditForm = true;
+                this.filesToUpload = [];
+                this.uploadCompleteCount = 0;
+                this.audio = this.uploadedFiles.shift();
+            },
+            onAddFiles(files) {
+                if (!files.length) {
+                    this.error = 'Please select files to upload';
+                    return;
+                }
+                if (files.length > MAX_UPLOADED_FILES) {
+                    this.error = 'You can upload not more that 4 files at once';
+                    return;
+                }
+
+                this.filesToUpload = files;
+            },
+            skip() {
+                if (this.uploadedFiles.length) {
+                    this.audio = this.uploadedFiles.shift();
+                } else {
+                    this.audio = null;
+                    this.showEditForm = false;
+                }
+            },
+            save(file) {
+                this.saving = file.id;
+                client.put('/audio/' + file.id, file).then(
+                    response => {
+                        this.saving = null;
+                        if (this.uploadedFiles.length) {
+                            this.audio = this.uploadedFiles.shift();
+                        } else {
+                            this.audio = null;
+                            this.showEditForm = false;
+                        }
+                    }, (error) => {
+                        this.saving = null;
+                        console.error(error);
+                    }
+                );
+            }
+        },
+        components: {Message, UploadProgress},
+    }
+</script>
 
 <style lang="less">
     @import "../assets/less/playlist.less";
@@ -90,20 +171,13 @@
             margin: 5px;
         }
 
+        input {
+            display: none;
+        }
+
         .file-select {
             display: inline-block;
             margin-top: 30px;
-        }
-    }
-
-    .upload-progress {
-        height: 20px;
-        width: 100%;
-        background-color: fade(#2f4f4f, 10%);
-
-        &-inner {
-            height: 100%;
-            background-color: #2f4f4f;
         }
     }
 
@@ -172,122 +246,3 @@
         }
     }
 </style>
-
-<script>
-    import Client from '../client';
-    import Message from '@/components/Message.vue';
-
-    const MAX_UPLOADED_FILES = 4;
-    const MAX_UPLOADED_FILE_SIZE = 50 * 1024 * 1024; //50MB
-    const UPLOAD_ALLOWED_TYPES = ['audio/mp3', 'audio/x-m4a'];
-    const UPLOAD_ALLOWED_EXTENSIONS = ['mp3', 'm4a'];
-
-    export default {
-        name: 'Upload',
-        data: function () {
-            return {
-                showUploadForm: true,
-                showEditForm: false,
-                showLoader: false,
-                error: null,
-                saving: null,
-                editing: null,
-
-                uploading: false,
-                uploaded: false,
-                uploadedFiles: [],
-                uploadError: null,
-                currentStatus: null,
-            };
-        },
-        mounted() {
-            if (window.innerWidth <= 450) {
-                this.width = 96 + '%';
-            }
-        },
-        methods: {
-            onAddFile(name, files) {
-                if (!files.length) {
-                    this.error = 'Please select files to upload';
-                    return;
-                }
-                if (files.length > MAX_UPLOADED_FILES) {
-                    this.error = 'You can upload not more that 4 files at once';
-                    return;
-                }
-
-                let data = new FormData();
-                let filesToUploadCount = 0;
-                for (let i = 0; i < files.length; i++) {
-                    const error = this.fileHasError(files[i]);
-                    if (!error) {
-                        data.append(name + i, files[i]);
-                        filesToUploadCount++;
-                    } else {
-                        this.error = 'There was an error with your file `' + files[i].name + '`. It will not be uploaded. <br>';
-                        this.error += error;
-                    }
-                }
-
-                if (filesToUploadCount === 0) {
-                    return;
-                }
-
-                this.showUploadForm = false;
-                this.showLoader = true;
-                Client.post('/audio/upload', data, (response) => {
-                    console.log(response);
-                    this.uploadedFiles = response;
-                    this.showEditForm = true;
-                    this.editing = this.uploadedFiles[0].id;
-                    this.showLoader = false;
-                }, (error) => {
-                    console.log(error);
-                    this.showLoader = false;
-                });
-
-            },
-            fileHasError(file) {
-                if (file.size > MAX_UPLOADED_FILE_SIZE) {
-                    return 'File should be less than ' + MAX_UPLOADED_FILE_SIZE / 1024 / 1024 + 'MB ';
-                }
-                if (UPLOAD_ALLOWED_TYPES.indexOf(file.type) === -1) {
-                    return 'File should be of type ' + UPLOAD_ALLOWED_EXTENSIONS[0] + ' or ' + UPLOAD_ALLOWED_EXTENSIONS[1];
-                }
-
-                return false;
-            },
-            skip(file) {
-                const currentIndex = this.uploadedFiles.indexOf(file);
-                if (!this.uploadedFiles[currentIndex + 1]) {
-                    this.editing = null;
-                    this.showEditForm = false;
-                    this.showUploadForm = true;
-                    this.error = null;
-                } else {
-                    this.editing = this.uploadedFiles[currentIndex + 1].id;
-                }
-            },
-            save(file) {
-                this.saving = file.id;
-
-                Client.put('/audio/' + file.id, file, (response) => {
-                    this.saving = null;
-                    const currentIndex = this.uploadedFiles.indexOf(file);
-                    if (!this.uploadedFiles[currentIndex + 1]) {
-                        this.editing = null;
-                        this.showEditForm = false;
-                        this.showUploadForm = true;
-                        this.error = null;
-                    } else {
-                        this.editing = this.uploadedFiles[currentIndex + 1].id;
-                    }
-                }, (error) => {
-                    this.saving = null;
-                    console.error(error);
-                });
-            }
-        },
-        components: {Message},
-    }
-</script>

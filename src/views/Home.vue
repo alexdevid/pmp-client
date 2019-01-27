@@ -1,6 +1,6 @@
 <template>
     <div class="homepage">
-        <Playlist :tracks="tracks" v-if="!empty"></Playlist>
+        <Playlist :tracks="tracks" :showLoadingIfEmpty="false"></Playlist>
         <div class="row" v-if="empty">
             There are no any tracks uploaded :(
         </div>
@@ -9,7 +9,9 @@
 
 <script>
     import Playlist from "@/components/Playlist.vue";
-    import Client from "../client";
+    import events from "../events";
+    import client from "../services/api-client";
+    import auth from "../services/authorization";
 
     export default {
         name: "Home",
@@ -20,16 +22,36 @@
                 tracks: []
             };
         },
+        mounted() {
+            this.$root.$on(events.SEARCH.QUERY_CHANGE, query => {
+                this.filterAudio(query);
+            });
+        },
         created: function () {
             this.$root.$on("userLogout", () => {
                 this.logout();
             });
-            Client.get("/audio", response => {
-                this.tracks = response.data;
+            client.get('/audio').then(response => {
+                this._updateAudioFromResponse(response);
+            });
+        },
+        methods: {
+            filterAudio(query) {
+                client.get("/audio", {'query': query}).then(response => {
+                    this._updateAudioFromResponse(response);
+                });
+            },
+
+            /**
+             * @param {Object} response
+             * @private
+             */
+            _updateAudioFromResponse(response) {
+                this.tracks = response.data.collection;
                 if (response.data.length === 0) {
                     this.empty = true;
                 }
-            });
+            }
         },
         components: {Playlist}
     };

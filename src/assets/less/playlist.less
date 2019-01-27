@@ -1,6 +1,18 @@
 @import "mixins";
 
 .playlist {
+    &-controls {
+        padding: 10px;
+        display: flex;
+        align-items: center;
+
+        &-item {
+            &-right {
+                margin-left: auto !important;
+            }
+        }
+    }
+
     .track {
         padding: 7.5px 10px;
         transition-duration: 0.1s;

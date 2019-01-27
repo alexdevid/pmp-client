@@ -77,7 +77,7 @@
 </style>
 <script>
     import Playlist from "@/components/Playlist.vue";
-    import Client from "../../client";
+    import Client from "../../services/api-client";
 
     export default {
         name: "Playlists",
@@ -97,7 +97,7 @@
         },
         mounted() {
             Client.get(
-                "/playlists/" + this.$store.state.user.username,
+                "/playlists/" + this.$store.state.user.username, {},
                 response => {
                     this.playlists = response.data;
                 },
