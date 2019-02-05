@@ -42,9 +42,9 @@
                         <i class="far fa-heart" v-if="!track.favourite"></i>
                         <i class="fas fa-heart" v-if="track.favourite"></i>
                     </span>
-            <span class="player-control" @click.stop="false" v-if="!addCheckbox && !addRemove">
+            <a class="player-control" @click.stop="" v-if="!addCheckbox && !addRemove" :download="track.artist.title + ' - ' + track.title + '.mp3'" :href="track.src">
                 <i class="fa fa-download"></i>
-            </span>
+            </a>
         </div>
         <div class="clear"></div>
     </div>
@@ -110,6 +110,9 @@
                         this.track.favourite = response.favourite;
                         this.$root.$emit(events.PLAYLIST.FAV, this.track);
                     }, error => console.log(error));
+            },
+            download() {
+
             },
             check() {
 

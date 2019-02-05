@@ -6,15 +6,8 @@
                          v-if="$store.state.user !== null"><i class="fa fa-cloud-upload-alt"></i>
             </router-link>
         </div>
-        <div class="page-loading" v-if="tracks.length === 0 && showLoadingIfEmpty">
-            <i class="fas fa-sync-alt fa-spin"></i>
-        </div>
-
         <Track v-for="track in tracks" :track="track" :active="active"/>
-
-        <div class="playlist-load-more" v-if="loadMore">
-            <a href="#" @click.prevent="loadNextCollection">Load more</a>
-        </div>
+        <horizontal-preloader :show="showHorizontalLoader" v-if="loadMore"></horizontal-preloader>
     </div>
 </template>
 
@@ -24,6 +17,8 @@
 <script>
     import Search from "@/components/Search.vue";
     import Track from '@/components/playlist/track.vue';
+    import HorizontalPreloader from '@/components/preloader/horizontal.vue';
+    import BlockPreloader from '@/components/preloader/block.vue';
     import client from "../services/api/api-client";
     import audioService from '../services/api/audio';
     import events from "../events";
@@ -38,7 +33,17 @@
                 active: null,
                 loadMore: true,
                 page: 1,
+
+                showHorizontalLoader: true,
+                bottom: false,
             };
+        },
+        watch: {
+            bottom(bottom) {
+                if (bottom) {
+                    this.loadNextCollection();
+                }
+            }
         },
         created() {
             if (this.apiParams) {
@@ -51,9 +56,12 @@
                         }
                     },
                     (error) => {
-                        console.log(error.statusText);
+                        console.error(error.statusText);
                     });
             }
+            window.addEventListener('scroll', () => {
+                this.bottom = this.bottomVisible()
+            });
         },
         mounted() {
             this.$root.$on(events.PLAYLIST.FAV, track => {
@@ -74,6 +82,12 @@
             this.$root.$on('add-to-playlist', () => {
                 this.$emit('audioAdd', this.checked);
             });
+            this.$root.$on(events.PLAYER.ENDED, (track) => {
+                const index = this.tracks.indexOf(track);
+                if (index + 2 >= this.tracks.length && this.loadMore) {
+                    this.loadNextCollection();
+                }
+            });
             this.$root.$on(events.PLAYER.PLAY_NEXT, track => {
                 const index = this.tracks.indexOf(track);
                 if (index >= 0 && index < this.tracks.length - 1) {
@@ -90,18 +104,32 @@
             });
         },
         methods: {
+            bottomVisible() {
+                if (!this.loadMore) {
+                    return false;
+                }
+
+                const scrollY = window.scrollY;
+                const visible = document.documentElement.clientHeight;
+                const pageHeight = document.documentElement.scrollHeight;
+                const bottomOfPage = visible + scrollY >= pageHeight;
+
+                return bottomOfPage || pageHeight < visible;
+            },
             loadNextCollection() {
                 this.page++;
-
+                this.showHorizontalLoader = true;
                 audioService.getAll(this.page).then(
                     (collection) => {
                         this.tracks.push(...collection);
+                        this.showHorizontalLoader = false;
                         if (collection.length < 10) {
                             this.loadMore = false;
                         }
                     },
                     (error) => {
-                        console.log(error.statusText);
+                        this.showHorizontalLoader = false;
+                        console.error(error.statusText);
                     });
             },
             shuffle() {
@@ -156,7 +184,7 @@
             },
         },
         components: {
-            Search, Track
+            Search, Track, HorizontalPreloader, BlockPreloader
         }
     };
 </script>

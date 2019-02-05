@@ -8,9 +8,7 @@
                 </p>
             </div>
         </Message>
-        <div class="page-loading" v-if="!user && !profileError">
-            <i class="fas fa-sync-alt fa-spin"></i>
-        </div>
+        <block-preloader :show="!user && !profileError"></block-preloader>
         <div class="profile-block" v-if="user && !profileError">
             <div class="profile-image">
                 <img src="../../assets/userpic.jpg" alt="">
@@ -126,6 +124,7 @@
     import client from "../../services/api/api-client";
     import Playlist from '@/components/Playlist.vue';
     import Message from '@/components/Message.vue';
+    import BlockPreloader from '@/components/preloader/block.vue';
 
     export default {
         name: "Profile",
@@ -164,6 +163,6 @@
                     });
             }
         },
-        components: {Playlist, Message}
+        components: {Playlist, Message, BlockPreloader}
     };
 </script>

@@ -12,46 +12,46 @@ export default new Router({
             name: "home",
             component: () => import("./views/Home.vue")
         },
-        {
-            path: "/radio",
-            name: "radio",
-            component: () => import("./views/Radio.vue")
-        },
+        // {
+        //     path: "/radio",
+        //     name: "radio",
+        //     component: () => import("./views/Radio.vue")
+        // },
         {
             path: "/login",
             name: "login",
             component: () => import("./views/Login.vue")
         },
-        {
-            path: "/about",
-            name: "about",
-            component: () => import("./views/standalone/About.vue")
-        },
-        {
-            path: "/ads",
-            name: "ads",
-            component: () => import("./views/standalone/Ads.vue")
-        },
-        {
-            path: "/contact",
-            name: "contact",
-            component: () => import("./views/standalone/Contact.vue")
-        },
-        {
-            path: "/help",
-            name: "help",
-            component: () => import("./views/standalone/Help.vue")
-        },
-        {
-            path: "/news",
-            name: "news",
-            component: () => import("./views/standalone/News.vue")
-        },
-        {
-            path: "/privacy",
-            name: "privacy",
-            component: () => import("./views/standalone/Privacy.vue")
-        },
+        // {
+        //     path: "/about",
+        //     name: "about",
+        //     component: () => import("./views/standalone/About.vue")
+        // },
+        // {
+        //     path: "/ads",
+        //     name: "ads",
+        //     component: () => import("./views/standalone/Ads.vue")
+        // },
+        // {
+        //     path: "/contact",
+        //     name: "contact",
+        //     component: () => import("./views/standalone/Contact.vue")
+        // },
+        // {
+        //     path: "/help",
+        //     name: "help",
+        //     component: () => import("./views/standalone/Help.vue")
+        // },
+        // {
+        //     path: "/news",
+        //     name: "news",
+        //     component: () => import("./views/standalone/News.vue")
+        // },
+        // {
+        //     path: "/privacy",
+        //     name: "privacy",
+        //     component: () => import("./views/standalone/Privacy.vue")
+        // },
         {
             path: "/upload",
             name: "upload",
@@ -82,11 +82,11 @@ export default new Router({
         //     name: "playlist-page",
         //     component: () => import("./views/PlaylistPage.vue")
         // },
-        {
-            path: "/profile/settings",
-            name: "settings",
-            component: () => import("./views/account/Settings.vue")
-        },
+        // {
+        //     path: "/profile/settings",
+        //     name: "settings",
+        //     component: () => import("./views/account/Settings.vue")
+        // },
         // {
         //     path: "/profile/subscriptions",
         //     name: "subscriptions",

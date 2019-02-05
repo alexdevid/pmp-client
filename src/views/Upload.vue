@@ -2,7 +2,7 @@
     <div class="upload-page">
         <form enctype="multipart/form-data" novalidate class="upload-form"
               v-if="filesToUpload.length === 0 && !showEditForm">
-            <p>You can upload not more that 4 files at once</p>
+            <p>You can upload not more that 10 files at once</p>
             <p>Each file should be less than 50MB</p>
             <p>Allowed file types are `mp3` and `m4a`</p>
             <a href="#" class="button file-select" @click="$refs.file.click()">Select files</a>
@@ -85,7 +85,7 @@
     import Message from '@/components/Message.vue';
     import UploadProgress from '@/components/upload/Progress.vue';
 
-    const MAX_UPLOADED_FILES = 4;
+    const MAX_UPLOADED_FILES = 10;
 
     export default {
         name: 'Upload',

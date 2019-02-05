@@ -11,6 +11,7 @@ export default {
     PLAYER: {
         PLAY: 'player-play',
         PAUSE: 'player-pause',
+        ENDED: 'player-ended',
         CAN_PLAY: 'player-can-play',
         SHUFFLE: 'player-shuffle',
         PLAY_NEXT: 'player-play-next',

@@ -96,6 +96,7 @@
             this.audioSource.addEventListener('timeupdate', () => {
                 this.progress = this.audioSource.currentTime * 100 / this.audioSource.duration;
                 if (this.progress === 100) {
+                    this.$root.$emit(events.PLAYER.ENDED, this.audio);
                     this.playNext();
                 }
             });
