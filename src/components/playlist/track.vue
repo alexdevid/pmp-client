@@ -1,8 +1,8 @@
 <template>
     <div class="track" @click="play" v-bind:class="{active: active === track.id, loading: loading}">
         <div class="track-image">
-            <i class="fa fa-music" v-if="!track.cover"></i>
-            <img :src="track.cover" v-if="track.cover">
+            <i class="fa fa-music" v-if="!track.coverThumb"></i>
+            <img :src="track.coverThumb" v-if="track.coverThumb">
 
             <div class="track-play-overlay">
                 <i class="fa fa-play" v-if="paused || active !== track.id && !loading"></i>

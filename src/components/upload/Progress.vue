@@ -141,8 +141,7 @@
                         this.$emit(events.UPLOAD.FINISH);
                         this.complete = true;
                         this.status = UPLOAD_STATUS_COMPLETE;
-                        this.image = audio.cover;
-                        console.log(audio);
+                        this.image = audio.coverThumb;
                         if (audio.addedBefore) {
                             this.warning = true;
                             this.status = UPLOAD_STATUS_ALREADY_UPLOADED;
