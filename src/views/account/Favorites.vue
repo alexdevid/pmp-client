@@ -9,7 +9,7 @@
 
 <script>
     import Playlist from "@/components/Playlist.vue";
-    import Client from "../../services/api-client";
+    import Client from "../../services/api/api-client";
 
     export default {
         name: "Favorites",

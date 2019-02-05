@@ -34,18 +34,7 @@
                 <a href="#" class="profile-controls-logout" @click.prevent="logout()">Sign out</a>
             </div>
         </div>
-        <Playlist :tracks="tracks" v-if="!empty && !tracksError"></Playlist>
-        <div class="page-loading" v-if="tracksLoading && user">
-            <i class="fas fa-sync-alt fa-spin"></i>
-        </div>
-        <Message v-if="tracksError && !tracksLoading" :type="'error relative'">
-            <div slot="body">
-                There was an error while receiving audio data
-                <p>
-                    <button class="button" @click="loadTracks()">Try again</button>
-                </p>
-            </div>
-        </Message>
+        <Playlist :showLoadingIfEmpty="true" :apiParams="apiParams"></Playlist>
         <div class="row" v-if="empty">
             There are no any tracks uploaded :(
         </div>
@@ -134,7 +123,7 @@
 
 <script>
     import events from "../../events";
-    import client from "../../services/api-client";
+    import client from "../../services/api/api-client";
     import Playlist from '@/components/Playlist.vue';
     import Message from '@/components/Message.vue';
 
@@ -144,10 +133,8 @@
             return {
                 empty: false,
                 user: null,
-                tracksError: false,
-                tracksLoading: true,
                 profileError: false,
-                tracks: []
+                apiParams: {}
             };
         },
         mounted() {
@@ -156,6 +143,7 @@
             }
 
             this.load();
+            this.apiParams.url = '/audio/' + this.$store.state.user.username;
         },
         methods: {
             load() {
@@ -164,30 +152,12 @@
             logout() {
                 this.$root.$emit(events.AUTHORIZATION.LOGOUT)
             },
-            loadTracks() {
-                this.tracksLoading = true;
-                client.get('/audio/' + this.$store.state.user.username).then(
-                    response => {
-                        if (response.data.length === 0) {
-                            this.empty = true;
-                        }
-                        this.tracks = response.data;
-                        this.tracksLoading = false;
-                        this.tracksError = false;
-                    },
-                    error => {
-                        this.tracksLoading = false;
-                        this.tracksError = true;
-                    }
-                );
-            },
             loadUserData() {
                 this.profileError = false;
                 client.get('/user/' + this.$store.state.user.username).then(
                     response => {
                         this.user = response.body;
                         this.profileError = false;
-                        this.loadTracks();
                     },
                     error => {
                         this.profileError = true;

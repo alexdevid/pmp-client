@@ -46,7 +46,7 @@
 </style>
 <script>
     import Search from "@/components/Search.vue";
-    import client from "../services/api-client";
+    import client from "../services/api/api-client";
     import Events from "../events";
 
     export default {

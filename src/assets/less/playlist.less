@@ -1,6 +1,10 @@
 @import "mixins";
 
 .playlist {
+    &-load-more {
+        margin: 30px auto;
+        text-align: center;
+    }
     &-controls {
         padding: 10px;
         display: flex;
@@ -23,6 +27,11 @@
             background-color: rgba(0, 0, 0, 0.03);
         }
 
+        &.loading {
+            .track-play-overlay-playing {
+                display: block !important;
+            }
+        }
         &:hover {
             background-color: rgba(0, 0, 0, 0.03);
 
@@ -62,8 +71,6 @@
         }
     }
     .control-fav {
-        margin-right: 40px;
-
         .responsive(450px, { display: none; });
     }
 }

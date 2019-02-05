@@ -10,12 +10,19 @@ export default {
     },
     PLAYER: {
         PLAY: 'player-play',
+        PAUSE: 'player-pause',
         CAN_PLAY: 'player-can-play',
-        SHUFFLE: 'player-shuffle'
+        SHUFFLE: 'player-shuffle',
+        PLAY_NEXT: 'player-play-next',
+        PLAY_PREV: 'player-play-prev',
     },
     PLAYLIST: {
         AUDIO_CHECK: 'audio-checked',
         AUDIO_UNCHECK: 'audio-unchecked',
+        AUDIO_PAUSE: 'audio-paused',
+        START_PLAY: 'audio-play',
+        PLAY: 'playlist-play',
+        FAV: 'playlist-fav'
     },
     SEARCH: {
         QUERY_CHANGE: 'search-query-change'

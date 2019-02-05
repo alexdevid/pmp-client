@@ -61,7 +61,7 @@
 </template>
 
 <script>
-    import Events from "../events";
+    import events from "../events";
     import vueSlider from 'vue-slider-component/src/vue2-slider.vue'
 
     export default {
@@ -84,14 +84,14 @@
             this.audioSource = new Audio();
             this.audioSource.volume = this.volume / 100;
 
-            this.$root.$on(Events.PLAYER.PLAY, track => {
+            this.$root.$on(events.PLAYLIST.START_PLAY, track => {
                 this.play(track);
             });
-            this.$root.$on("audioPause", () => {
+            this.$root.$on(events.PLAYLIST.AUDIO_PAUSE, () => {
                 this.pause();
             });
             this.audioSource.addEventListener('canplay', () => {
-                this.$root.$emit(Events.PLAYER.CAN_PLAY);
+                this.$root.$emit(events.PLAYER.CAN_PLAY);
             });
             this.audioSource.addEventListener('timeupdate', () => {
                 this.progress = this.audioSource.currentTime * 100 / this.audioSource.duration;
@@ -118,17 +118,18 @@
 
                 this.playing = true;
                 this.audioSource.play();
+                this.$root.$emit(events.PLAYER.PLAY, this.audio);
             },
             pause() {
-                this.$root.$emit("playerPaused", this.audio);
                 this.audioSource.pause();
                 this.playing = false;
+                this.$root.$emit(events.PLAYER.PAUSE, this.audio);
             },
             playNext() {
-                this.$root.$emit("playerPlayNext", this.audio);
+                this.$root.$emit(events.PLAYER.PLAY_NEXT, this.audio);
             },
             playPrev() {
-                this.$root.$emit("playerPlayPrev", this.audio);
+                this.$root.$emit(events.PLAYER.PLAY_PREV, this.audio);
             },
             mute() {
                 this.volumeBeforeMute = this.volume;
@@ -146,8 +147,7 @@
                 this.audioSource.currentTime = this.progress * this.audioSource.duration / 100;
             },
             shuffle() {
-                console.log('PLAYER-SHUFFLE');
-                this.$root.$emit(Events.PLAYER.SHUFFLE);
+                this.$root.$emit(events.PLAYER.SHUFFLE, this.audio);
             },
             getPlayerTime() {
                 if (this.showCurrentTime) {

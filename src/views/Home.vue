@@ -1,16 +1,13 @@
 <template>
     <div class="homepage">
-        <Playlist :tracks="tracks" :showLoadingIfEmpty="false"></Playlist>
-        <div class="row" v-if="empty">
-            There are no any tracks uploaded :(
-        </div>
+        <Playlist :showLoadingIfEmpty="false" :apiParams="apiParams"></Playlist>
     </div>
 </template>
 
 <script>
     import Playlist from "@/components/Playlist.vue";
     import events from "../events";
-    import client from "../services/api-client";
+    import client from "../services/api/api-client";
     import auth from "../services/authorization";
 
     export default {
@@ -18,8 +15,9 @@
 
         data: function () {
             return {
-                empty: false,
-                tracks: []
+                apiParams: {
+                    url: '/audio'
+                }
             };
         },
         mounted() {
@@ -30,9 +28,6 @@
         created: function () {
             this.$root.$on("userLogout", () => {
                 this.logout();
-            });
-            client.get('/audio').then(response => {
-                this._updateAudioFromResponse(response);
             });
         },
         methods: {

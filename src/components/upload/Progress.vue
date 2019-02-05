@@ -1,7 +1,8 @@
 <template>
-    <div class="upload-progress" :class="[complete ? 'complete': '', error ? 'error' : '']">
+    <div class="upload-progress" :class="[complete ? 'complete': '', error ? 'error' : '', warning ? 'warning' : '']">
         <div class="upload-progress-image">
-            <i class="fa fa-music"></i>
+            <i class="fa fa-music" v-if="!image"></i>
+            <img :src="image" v-if="image">
         </div>
         <div class="upload-progress-info">
             <div>{{ file.name }}</div>
@@ -9,9 +10,9 @@
         </div>
         <div class="upload-progress-status">
             <span v-if="percent > 0 && percent < 100">{{ percent + '%' }}</span>
-            <i class="fa fa-check" v-if="complete"></i>
+            <i class="fa fa-check" v-if="complete && !warning"></i>
             <i class="fas fa-sync-alt fa-spin" v-if="percent === 100 && !complete && !error"></i>
-            <i class="fa fa-exclamation-triangle" v-if="error"></i>
+            <i class="fa fa-exclamation-triangle" v-if="error || warning"></i>
         </div>
         <div class="upload-progress-bar" :style="{width: percent + '%'}"></div>
     </div>
@@ -37,6 +38,12 @@
                 color: red;
             }
         }
+        &.warning {
+            .upload-progress-status,
+            .upload-progress-info div:first-child {
+                color: orange;
+            }
+        }
 
         &-image {
             width: 40px;
@@ -46,6 +53,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+
+            img {
+                width: 40px;
+                height: 40px;
+                border-radius: 2px;
+            }
         }
         &-info {
             padding-left: 10px;
@@ -75,12 +88,13 @@
 
 <script>
     import events from '../../events';
-    import client from '../../services/api-client';
+    import client from '../../services/api/api-client';
 
     const UPLOAD_STATUS_SERVER = 'Uploading to remote server';
     const UPLOAD_STATUS_CLOUD = 'Storing in cloud storage';
     const UPLOAD_STATUS_ERROR = 'Error';
     const UPLOAD_STATUS_COMPLETE = 'Complete';
+    const UPLOAD_STATUS_ALREADY_UPLOADED = 'File was already uploaded';
 
     const MAX_UPLOADED_FILE_SIZE = 50 * 1024 * 1024; //50MB
     const UPLOAD_ALLOWED_TYPES = ['audio/mp3', 'audio/x-m4a'];
@@ -93,8 +107,10 @@
             return {
                 status: UPLOAD_STATUS_SERVER,
                 percent: 0,
+                image: null,
                 complete: false,
                 error: false,
+                warning: false,
             }
         },
         mounted() {
@@ -120,10 +136,17 @@
                     }
                 }).then(
                     response => {
-                        this.$emit(events.UPLOAD.COMPLETE, response.body[0]);
+                        const audio = response.body[0];
+                        this.$emit(events.UPLOAD.COMPLETE, audio);
                         this.$emit(events.UPLOAD.FINISH);
                         this.complete = true;
                         this.status = UPLOAD_STATUS_COMPLETE;
+                        this.image = audio.cover;
+                        console.log(audio);
+                        if (audio.addedBefore) {
+                            this.warning = true;
+                            this.status = UPLOAD_STATUS_ALREADY_UPLOADED;
+                        }
                     }, error => {
                         this.$emit(events.UPLOAD.ERROR, error.statusText);
                         this.$emit(events.UPLOAD.FINISH);

@@ -85,7 +85,7 @@
 <script>
     import Playlist from "@/components/Playlist.vue";
     import Modal from "@/components/Modal.vue";
-    import Client from "../../services/api-client";
+    import Client from "../../services/api/api-client";
     import Events from "../../events";
 
     export default {

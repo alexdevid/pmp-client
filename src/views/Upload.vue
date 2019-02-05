@@ -13,6 +13,10 @@
                         v-for="uploadedFile in filesToUpload" :file="uploadedFile">
         </UploadProgress>
 
+        <div v-if="showNexButton" class="uploaded-form-next">
+            <button class="button" @click="onShowEditForm">Next</button>
+        </div>
+
         <form v-if="showEditForm">
             <div class="uploaded-form" :class="[saving ? 'saving': '', audio ? 'editing' : '']">
                 <div class="page-loading">
@@ -39,7 +43,7 @@
                 <div class="added-before" v-if="audio.addedBefore">
                     <p>
                         This audio was added before by somebody. <br>
-                        It was added to your playlist.
+                        You can not edit it, but it was added to your playlist.
                     </p>
                     <button class="button" @click.prevent="skip(audio)">Okay</button>
                 </div>
@@ -77,7 +81,7 @@
 
 <script>
     import events from '../events';
-    import client from '../services/api-client';
+    import client from '../services/api/api-client';
     import Message from '@/components/Message.vue';
     import UploadProgress from '@/components/upload/Progress.vue';
 
@@ -94,6 +98,7 @@
                 filesToUpload: [],
                 uploadedFiles: [],
                 uploadCompleteCount: 0,
+                showNexButton: false,
             };
         },
         mounted() {
@@ -109,14 +114,17 @@
             onFinish() {
                 this.uploadCompleteCount++;
                 if (this.uploadCompleteCount === this.filesToUpload.length) {
-                    this.onFullUploadComplete();
+                    this.showNexButton = true;
                 }
             },
-            onFullUploadComplete() {
-                this.showEditForm = true;
+            onShowEditForm() {
                 this.filesToUpload = [];
-                this.uploadCompleteCount = 0;
                 this.audio = this.uploadedFiles.shift();
+                this.showNexButton = false;
+                this.uploadCompleteCount = 0;
+                if (this.audio) {
+                    this.showEditForm = true;
+                }
             },
             onAddFiles(files) {
                 if (!files.length) {
@@ -134,23 +142,27 @@
                 if (this.uploadedFiles.length) {
                     this.audio = this.uploadedFiles.shift();
                 } else {
+                    this.$router.push('/profile');
                     this.audio = null;
                     this.showEditForm = false;
                 }
             },
             save(file) {
-                this.saving = file.id;
+                this.saving = true;
                 client.put('/audio/' + file.id, file).then(
                     response => {
+                        console.log(response);
                         this.saving = null;
                         if (this.uploadedFiles.length) {
                             this.audio = this.uploadedFiles.shift();
                         } else {
+                            this.$router.push('/profile');
                             this.audio = null;
                             this.showEditForm = false;
                         }
                     }, (error) => {
-                        this.saving = null;
+//                        this.saving = null;
+                        console.log(error);
                         console.error(error);
                     }
                 );
@@ -187,6 +199,12 @@
         display: none;
         position: relative;
 
+        &-next {
+            width: 480px;
+            margin: 0 auto;
+            text-align: right;
+        }
+
         &.editing {
             display: block;
         }
@@ -201,7 +219,7 @@
         }
 
         .added-before {
-            padding: 0 40px;
+            padding: 0 30px;
 
             .button {
                 float: left;

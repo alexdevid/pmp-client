@@ -4,7 +4,7 @@ import router from "./router";
 import store from "./store";
 import VueResource from "vue-resource";
 import auth from './services/authorization';
-import client from './services/api-client';
+import client from './services/api/api-client';
 import events from './events';
 
 Vue.config.productionTip = false;
@@ -40,7 +40,8 @@ new Vue({
                         roles: response.body.roles
                     });
                 }, error => {
-                    this.$root.$emit(events.AUTHORIZATION.FAILURE, username)
+                    this.$root.$emit(events.AUTHORIZATION.FAILURE, null);
+                    this.$root.$emit(events.AUTHORIZATION.COMPLETE, null);
                 }
             );
         }

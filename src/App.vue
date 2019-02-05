@@ -26,7 +26,7 @@
     import Player from "@/components/Player.vue";
     import TopNav from "@/components/TopNav.vue";
     import Message from "@/components/Message.vue";
-    import Client from "./services/api-client.js";
+    import Client from "./services/api/api-client.js";
     import Events from "./events";
 
     export default {
@@ -46,7 +46,7 @@
                 this.authorized = true;
                 this.showLoginMessage = false;
             });
-            this.$root.$on(Events.AUTHORIZATION.FAILURE, username => {
+            this.$root.$on(Events.AUTHORIZATION.FAILURE, () => {
                 this.authorized = false;
                 this.showLoginMessage = true;
             });
