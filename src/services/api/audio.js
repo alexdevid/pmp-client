@@ -2,7 +2,7 @@ import client from './api-client';
 
 const params = {
     page: 1,
-    per_page: 10,
+    per_page: 30,
     order: 'DESC',
     order_by: 'id',
     query: null
