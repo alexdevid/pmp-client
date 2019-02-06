@@ -195,7 +195,7 @@
             align-items: center;
             padding: 0 10px;
 
-            .responsive(450px, { display: block; padding: 0; });
+            .responsive(450px, { padding: 0; });
         }
         .track-image {
             width: 40px;
@@ -282,17 +282,21 @@
             .fa-backward {
                 margin-left: 30px;
             }
-            .responsive(
-                    450px,
-            { .fa-random,
-            .fa-redo {
-                display: none;
-            } position: fixed; top: 61px; right: 10px; }
-            );
+            .responsive( 450px, {
+                .fa-random,
+                .fa-redo {
+                    display: none;
+                }
+                position: fixed;
+                top: 61px;
+                right: 10px;
+            });
         }
         &-progress {
             padding-top: 7px;
             position: relative;
+
+            .responsive(450px, { margin: 0 -10px; });
 
             &-buffered {
                 width: 940px;
@@ -301,6 +305,8 @@
                 background-color: #ababab;
                 top: 7px;
                 left: 10px;
+
+                .responsive(450px, { margin: 0 -10px; });
             }
             .vue-slider-dot-handle {
                 opacity: 0;
@@ -313,7 +319,7 @@
             }
             .vue-slider-process {
                 background-color: #2f4f4f;
-                .responsive(450px, { position: fixed; top: 100px; left: 0; });
+                .responsive(450px, { position: absolute; top: 100px; left: 0; });
             }
         }
         &-control {

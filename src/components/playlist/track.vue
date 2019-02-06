@@ -195,7 +195,7 @@
             text-align: right;
             margin-left: auto;
 
-            .responsive(450px, { width: 20px; });
+            .responsive(450px, { width: 25px; });
         }
     }
 </style>

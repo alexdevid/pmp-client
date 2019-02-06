@@ -40,12 +40,14 @@
                 display: block !important;
             }
         }
-        &:hover {
-            background-color: rgba(0, 0, 0, 0.03);
+        @media (hover: hover) {
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.03);
 
-            .track-play-overlay,
-            .track-controls {
-                display: block;
+                .track-play-overlay,
+                .track-controls {
+                    display: block;
+                }
             }
         }
     }
