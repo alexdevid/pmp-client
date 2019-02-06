@@ -1,11 +1,6 @@
 #!/bin/bash
 
-error='\e[1;41m' # Red with white background
-info='\e[0;93m' # yellow
+HOST='devid@alexdevid.ru'
+DIR='/var/www/devid/pmp-client/'
 
-echo -e "${info}Updating dependencies...${NC}"
-npm i
-
-echo -e "${info}Building app...${NC}"
-npm run build
-
+ssh ${HOST} "cd ${DIR}; git pull; npm i; npm run build;"
