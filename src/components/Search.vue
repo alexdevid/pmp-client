@@ -16,7 +16,6 @@
         },
         methods: {
             emit() {
-                console.log(this.query);
                 this.$root.$emit(Events.SEARCH.QUERY_CHANGE, this.query);
             }
         },

@@ -6,8 +6,10 @@
                          v-if="$store.state.user !== null"><i class="fa fa-cloud-upload-alt"></i>
             </router-link>
         </div>
-        <Track v-for="track in tracks" :track="track" :active="active"/>
-        <horizontal-preloader :show="showHorizontalLoader" v-if="loadMore"></horizontal-preloader>
+        <Track v-for="track in tracks" :track="track" :active="active" :key="track.id"/>
+        <div class="page-loading" v-if="loadMore" v-show="showHorizontalLoader">
+            <i class="fas fa-sync-alt fa-spin"></i>
+        </div>
     </div>
 </template>
 
@@ -17,8 +19,6 @@
 <script>
     import Search from "@/components/Search.vue";
     import Track from '@/components/playlist/track.vue';
-    import HorizontalPreloader from '@/components/preloader/horizontal.vue';
-    import BlockPreloader from '@/components/preloader/block.vue';
     import client from "../services/api/api-client";
     import audioService from '../services/api/audio';
     import events from "../events";
@@ -62,6 +62,9 @@
             window.addEventListener('scroll', () => {
                 this.bottom = this.bottomVisible()
             });
+            if (localStorage.getItem('playing-track-id')) {
+                this.active = parseInt(localStorage.getItem('playing-track-id'));
+            }
         },
         mounted() {
             this.$root.$on(events.PLAYLIST.FAV, track => {
@@ -73,11 +76,11 @@
                 this.filterAudio(query);
             });
             this.$root.$on(events.PLAYER.SHUFFLE, track => {
-                this.shuffle();
-                this.active = track.id;
+                this.shuffle(track.id);
             });
             this.$root.$on(events.PLAYER.PLAY, track => {
                 this.active = track.id;
+                localStorage.setItem('playing-track-id', track.id);
             });
             this.$root.$on('add-to-playlist', () => {
                 this.$emit('audioAdd', this.checked);
@@ -132,12 +135,13 @@
                         console.error(error.statusText);
                     });
             },
-            shuffle() {
+            shuffle(id) {
                 for (let i = this.tracks.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [this.tracks[i], this.tracks[j]] = [this.tracks[j], this.tracks[i]];
                 }
                 this.$forceUpdate();
+                this.active = id;
             },
             isChecked(track) {
                 return this.checked.indexOf(track) !== -1;
@@ -159,24 +163,6 @@
             removeTrack(track) {
                 this.$emit('audioRemove', track);
             },
-            handleFav: function (track) {
-                client.post(
-                    "/audio/favorite/" + track.id,
-                    {},
-                    response => {
-                        track.favourite = !track.favourite;
-                        if (
-                            track.favourite === false &&
-                            this.$router.currentRoute.name === "profile-music"
-                        ) {
-                            this.tracks.splice(this.tracks.indexOf(track), 1);
-                        }
-                    },
-                    error => {
-                        console.error(error);
-                    }
-                );
-            },
             filterAudio(query) {
                 client.get(this.apiParams.url, {'query': query}).then(response => {
                     this.tracks = response.data.collection;
@@ -184,7 +170,7 @@
             },
         },
         components: {
-            Search, Track, HorizontalPreloader, BlockPreloader
+            Search, Track
         }
     };
 </script>

@@ -4,12 +4,8 @@
             <div class="player-track">
                 <div class="track" v-if="audio">
                     <div class="track-image">
-                        <img src="../assets/trackpic.jpg" v-if="!audio.cover">
-                        <img :src="audio.cover" v-if="audio.cover">
-                        <div class="audio-fav">
-                            <i class="far fa-heart" v-if="!audio.favourite"></i>
-                            <i class="fas fa-heart" v-if="audio.favourite"></i>
-                        </div>
+                        <i class="fa fa-music" v-if="!audio.coverThumb"></i>
+                        <img :src="audio.coverThumb" v-if="audio.coverThumb">
                     </div>
                     <div class="track-info">
                         <div class="track-title">
@@ -38,7 +34,7 @@
             </div>
             <div class="player-controls" v-if="audio">
                 <span class="player-control" @click="shuffle()"><i class="fa fa-random"></i></span>
-                <span class="player-control"><i class="fa fa-redo"></i></span>
+                <!--<span class="player-control"><i class="fa fa-redo"></i></span>-->
 
                 <span class="player-control" @click="playPrev"><i class="fa fa-backward"></i></span>
 
@@ -95,7 +91,7 @@
             });
             this.audioSource.addEventListener('timeupdate', () => {
                 this.progress = this.audioSource.currentTime * 100 / this.audioSource.duration;
-                if (this.progress === 100) {
+                if (Math.round(this.progress) === 100) {
                     this.$root.$emit(events.PLAYER.ENDED, this.audio);
                     this.playNext();
                 }
@@ -114,6 +110,7 @@
                     this.loading = track.id;
                     this.buffered = 0;
                     this.audio = track;
+                    this.progress = 0;
                     this.audioSource.src = track.src;
                 }
 

@@ -8,7 +8,6 @@
                 </p>
             </div>
         </Message>
-        <block-preloader :show="!user && !profileError"></block-preloader>
         <div class="profile-block" v-if="user && !profileError">
             <div class="profile-image">
                 <img src="../../assets/userpic.jpg" alt="">
@@ -28,7 +27,7 @@
                 </div>
             </div>
             <div class="profile-controls">
-                <a href="#" @click.prevent="logout()">Settings <i class="fa fa-cog"></i></a>
+                <!--<a href="#" @click.prevent="logout()">Settings <i class="fa fa-cog"></i></a>-->
                 <a href="#" class="profile-controls-logout" @click.prevent="logout()">Sign out</a>
             </div>
         </div>
@@ -41,6 +40,7 @@
 
 <style lang="less">
     @import "../../assets/less/tag.less";
+    @import "../../assets/less/mixins";
 
     .profile {
         position: relative;
@@ -50,21 +50,42 @@
                 width: 150px;
                 height: 150px;
                 border-radius: 2px;
+
+                .responsive(450px, {
+                    width: 50px;
+                    height: 50px;
+                });
             }
         }
         &-block {
             display: flex;
             padding: 0 10px;
             margin-bottom: 30px;
+
+            .responsive(450px, {
+                flex-direction: column;
+            });
         }
 
         &-info {
             display: flex;
             flex-direction: column;
             margin-left: 20px;
+            margin-top: 20px;
+
+            .responsive(450px, {
+                margin-left: 0;
+            });
+
             h1 {
                 margin: 0 0 10px;
                 line-height: 26px;
+
+                .responsive(450px, {
+                    position: absolute;
+                    top: 0;
+                    left: 75px;
+                });
             }
         }
 
@@ -82,6 +103,11 @@
 
             &-logout {
                 margin-top: auto;
+                .responsive(450px, {
+                    position: absolute;
+                    top: 30px;
+                    left: 75px;
+                });
             }
         }
 
@@ -92,6 +118,9 @@
         &-stats {
             margin-top: auto;
             text-transform: uppercase;
+            .responsive(450px, {
+                margin-top: 20px;
+            });
 
             a {
                 margin: 0 20px;
@@ -124,7 +153,6 @@
     import client from "../../services/api/api-client";
     import Playlist from '@/components/Playlist.vue';
     import Message from '@/components/Message.vue';
-    import BlockPreloader from '@/components/preloader/block.vue';
 
     export default {
         name: "Profile",
@@ -163,6 +191,6 @@
                     });
             }
         },
-        components: {Playlist, Message, BlockPreloader}
+        components: {Playlist, Message}
     };
 </script>

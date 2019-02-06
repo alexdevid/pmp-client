@@ -4,14 +4,13 @@
             <i class="fa fa-music" v-if="!track.coverThumb"></i>
             <img :src="track.coverThumb" v-if="track.coverThumb">
 
-            <div class="track-play-overlay">
-                <i class="fa fa-play" v-if="paused || active !== track.id && !loading"></i>
-                <i class="fa fa-pause" v-if="playing && !paused && !loading"></i>
+            <div class="track-play-overlay" v-if="active !== track.id">
+                <i class="fa fa-play"></i>
             </div>
 
             <div class="track-play-overlay track-play-overlay-playing" v-if="active === track.id">
-                <i class="fa fa-play" v-if="!playing || paused && playing"></i>
-                <i class="fa fa-pause" v-if="playing && !paused && !loading"></i>
+                <i class="fa fa-play" v-if="showPlayOverlay"></i>
+                <i class="fa fa-pause" v-if="showPauseOverlay"></i>
                 <i class="fas fa-sync-alt fa-spin" v-if="loading"></i>
             </div>
 
@@ -38,7 +37,7 @@
             <span class="player-control player-control-checkbox" v-if="addCheckbox && isChecked(track)">
                         <i class="far fa-check-square" @click.stop="uncheck"></i>
                     </span>
-            <span class="player-control control-fav" @click.stop="fav" v-if="!addCheckbox && !addRemove">
+            <span class="player-control control-fav" @click.stop="fav" v-if="!addCheckbox && !addRemove && $store.state.user">
                         <i class="far fa-heart" v-if="!track.favourite"></i>
                         <i class="fas fa-heart" v-if="track.favourite"></i>
                     </span>
@@ -63,6 +62,20 @@
                 playing: false,
                 paused: false,
             };
+        },
+        created() {
+            if (localStorage.getItem('playing-track-id') && localStorage.getItem('playing-track-id') == this.track.id) {
+                this.playing = true;
+            }
+        },
+        computed: {
+            showPauseOverlay() {
+                return this.playing && this.active === this.track.id && !this.paused && !this.loading
+            },
+            showPlayOverlay() {
+                //!playing || paused && playing
+                return !this.playing && this.active === this.track.id || this.paused && this.playing
+            }
         },
         mounted() {
             this.$root.$on(events.PLAYER.CAN_PLAY, (id) => {
@@ -110,9 +123,6 @@
                         this.track.favourite = response.favourite;
                         this.$root.$emit(events.PLAYLIST.FAV, this.track);
                     }, error => console.log(error));
-            },
-            download() {
-
             },
             check() {
 

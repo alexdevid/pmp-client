@@ -24,8 +24,8 @@
                 </div>
                 <div class="track">
                     <div class="track-image">
-                        <img src="../assets/trackpic.jpg" v-if="!audio.cover">
-                        <img :src="audio.cover" v-if="audio.cover">
+                        <i class="fa fa-music" v-if="!audio.coverThumb"></i>
+                        <img :src="audio.coverThumb" v-if="audio.coverThumb">
                     </div>
                     <div class="track-info">
                         <div class="track-title">
@@ -142,27 +142,24 @@
                 if (this.uploadedFiles.length) {
                     this.audio = this.uploadedFiles.shift();
                 } else {
-                    this.$router.push('/profile');
                     this.audio = null;
                     this.showEditForm = false;
+                    this.$router.push('/profile');
                 }
             },
             save(file) {
                 this.saving = true;
                 client.put('/audio/' + file.id, file).then(
                     response => {
-                        console.log(response);
                         this.saving = null;
                         if (this.uploadedFiles.length) {
                             this.audio = this.uploadedFiles.shift();
                         } else {
-                            this.$router.push('/profile');
                             this.audio = null;
                             this.showEditForm = false;
+                            this.$router.push('/profile');
                         }
                     }, (error) => {
-//                        this.saving = null;
-                        console.log(error);
                         console.error(error);
                     }
                 );

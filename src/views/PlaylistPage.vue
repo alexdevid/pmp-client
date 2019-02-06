@@ -32,7 +32,6 @@
             }, error => {console.log(error)});
 
             Client.get('/playlist/' + this.$route.params.id, {}, response => {
-                console.log(response);
                 this.playlist = response.data;
             }, error => {console.log(error)});
         },

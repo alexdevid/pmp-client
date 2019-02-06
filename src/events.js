@@ -23,7 +23,7 @@ export default {
         AUDIO_PAUSE: 'audio-paused',
         START_PLAY: 'audio-play',
         PLAY: 'playlist-play',
-        FAV: 'playlist-fav'
+        FAV: 'playlist-fav',
     },
     SEARCH: {
         QUERY_CHANGE: 'search-query-change'
