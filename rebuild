@@ -3,9 +3,6 @@
 error='\e[1;41m' # Red with white background
 info='\e[0;93m' # yellow
 
-echo -e "${info}Updating sources...${NC}"
-git pull origin master
-
 echo -e "${info}Updating dependencies...${NC}"
 npm i
 

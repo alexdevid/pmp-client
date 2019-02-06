@@ -31,7 +31,7 @@
                 <a href="#" class="profile-controls-logout" @click.prevent="logout()">Sign out</a>
             </div>
         </div>
-        <Playlist :showLoadingIfEmpty="true" :apiParams="apiParams"></Playlist>
+        <Playlist :showLoadingIfEmpty="true" :user="this.$store.state.user.username"></Playlist>
         <div class="row" v-if="empty">
             There are no any tracks uploaded :(
         </div>
@@ -161,7 +161,6 @@
                 empty: false,
                 user: null,
                 profileError: false,
-                apiParams: {}
             };
         },
         mounted() {
@@ -170,7 +169,6 @@
             }
 
             this.load();
-            this.apiParams.url = '/audio/' + this.$store.state.user.username;
         },
         methods: {
             load() {

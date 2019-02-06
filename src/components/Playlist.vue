@@ -7,6 +7,10 @@
             </router-link>
         </div>
         <Track v-for="track in tracks" :track="track" :active="active" :key="track.id"/>
+        <div class="playlist-error" v-if="showRetryButton">
+            There was error loading audio data. Please try again <br>
+            <button class="button" @click="loadAudioData()">Retry</button>
+        </div>
         <div class="page-loading" v-if="loadMore" v-show="showHorizontalLoader">
             <i class="fas fa-sync-alt fa-spin"></i>
         </div>
@@ -23,19 +27,23 @@
     import audioService from '../services/api/audio';
     import events from "../events";
 
+    const COLLECTION_LENGTH = 30;
+
     export default {
         name: "Playlist",
-        props: ['checkboxes', 'remove', 'hideSearch', 'showLoadingIfEmpty', 'apiParams'],
+        props: ['checkboxes', 'remove', 'hideSearch', 'showLoadingIfEmpty', 'user'],
         data: function () {
             return {
                 tracks: [],
                 checked: [],
                 active: null,
                 loadMore: true,
+
                 page: 1,
 
-                showHorizontalLoader: true,
+                showHorizontalLoader: false,
                 bottom: false,
+                showRetryButton: false
             };
         },
         watch: {
@@ -46,19 +54,7 @@
             }
         },
         created() {
-            if (this.apiParams) {
-                this.tracks = [];
-                audioService.getAll(this.page).then(
-                    (collection) => {
-                        this.tracks = collection;
-                        if (collection.length < 10) {
-                            this.loadMore = false;
-                        }
-                    },
-                    (error) => {
-                        console.error(error.statusText);
-                    });
-            }
+            this.loadAudioData();
             window.addEventListener('scroll', () => {
                 this.bottom = this.bottomVisible()
             });
@@ -107,6 +103,38 @@
             });
         },
         methods: {
+            loadAudioData() {
+                this.showRetryButton = false;
+                this.showHorizontalLoader = true;
+                if (this.user) {
+                    audioService.getByUsername(this.user, this.page).then(
+                        (collection) => {
+                            this._onGetAudioSuccess(collection)
+                        },
+                        (error) => {
+                            this._onGetAudioFail(error);
+                        });
+                } else {
+                    audioService.getAll(this.page).then(
+                        (collection) => {
+                            this._onGetAudioSuccess(collection)
+                        },
+                        (error) => {
+                            this._onGetAudioFail(error);
+                        });
+                }
+            },
+            _onGetAudioSuccess(collection){
+                this.showRetryButton = false;
+                this.tracks = collection;
+                if (collection.length < COLLECTION_LENGTH) {
+                    this.loadMore = false;
+                }
+            },
+            _onGetAudioFail(error){
+                this.showHorizontalLoader = false;
+                this.showRetryButton = true;
+            },
             bottomVisible() {
                 if (!this.loadMore) {
                     return false;
@@ -122,18 +150,7 @@
             loadNextCollection() {
                 this.page++;
                 this.showHorizontalLoader = true;
-                audioService.getAll(this.page).then(
-                    (collection) => {
-                        this.tracks.push(...collection);
-                        this.showHorizontalLoader = false;
-                        if (collection.length < 10) {
-                            this.loadMore = false;
-                        }
-                    },
-                    (error) => {
-                        this.showHorizontalLoader = false;
-                        console.error(error.statusText);
-                    });
+                this.loadAudioData();
             },
             shuffle(id) {
                 for (let i = this.tracks.length - 1; i > 0; i--) {

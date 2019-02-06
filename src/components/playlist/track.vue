@@ -122,7 +122,7 @@
                     response => {
                         this.track.favourite = response.favourite;
                         this.$root.$emit(events.PLAYLIST.FAV, this.track);
-                    }, error => console.log(error));
+                    }, error => console.error(error));
             },
             check() {
 

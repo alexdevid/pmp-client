@@ -36,6 +36,27 @@ export default {
         });
     },
 
+    getByUsername(username, page, order, order_by) {
+        let requestParams = params;
+        if (typeof page !== 'undefined') {
+            requestParams.page = page;
+        }
+        if (typeof order !== 'undefined') {
+            requestParams.order = order;
+        }
+        if (typeof order_by !== 'undefined') {
+            requestParams.order_by = order_by;
+        }
+
+        return new Promise((resolve, reject) => {
+            client.get('/audio/' + username, requestParams).then(response => {
+                resolve(response.data.collection);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
     /**
      * @param {int|String} id
      * @returns {Promise}
