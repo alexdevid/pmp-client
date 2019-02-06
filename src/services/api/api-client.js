@@ -3,7 +3,7 @@ import VueResource from "vue-resource";
 
 Vue.use(VueResource);
 
-const API_ENDPOINT = "http://music.test/index.php/api";
+const API_ENDPOINT = process.env.VUE_APP_API_URL;
 
 export default {
     token: null,
