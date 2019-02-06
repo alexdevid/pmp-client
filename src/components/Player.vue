@@ -87,11 +87,13 @@
                 this.pause();
             });
             this.audioSource.addEventListener('canplay', () => {
+                document.title = this.audio.artist.title + ' - ' + this.audio.title;
                 this.$root.$emit(events.PLAYER.CAN_PLAY);
             });
             this.audioSource.addEventListener('timeupdate', () => {
-                this.progress = this.audioSource.currentTime * 100 / this.audioSource.duration;
-                if (Math.round(this.progress) === 100) {
+                this.progress = Math.round(this.audioSource.currentTime * 100 / this.audioSource.duration);
+                if (this.progress === 100) {
+                    document.title = 'PMP';
                     this.$root.$emit(events.PLAYER.ENDED, this.audio);
                     this.playNext();
                 }
@@ -106,6 +108,7 @@
         },
         methods: {
             play(track) {
+                document.title = 'PMP';
                 if (!this.audio || this.audio.id !== track.id) {
                     this.loading = track.id;
                     this.buffered = 0;
