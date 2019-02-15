@@ -1,6 +1,6 @@
 <template>
     <div class="playlist">
-        <Search v-if="tracks.length > 0"></Search>
+        <Search v-if="tracks.length > 0 || isSearching"></Search>
         <div class="playlist-controls">
             <router-link to="/upload" class="playlist-controls-item playlist-controls-item-right button button-alt"
                          v-if="$store.state.user !== null"><i class="fa fa-cloud-upload-alt"></i>
@@ -38,6 +38,7 @@
                 checked: [],
                 active: null,
                 loadMore: true,
+                isSearching: false,
 
                 page: 1,
 
@@ -49,12 +50,14 @@
         watch: {
             bottom(bottom) {
                 if (bottom) {
+                    console.log('bottom');
                     this.loadNextCollection();
                 }
             }
         },
         created() {
             this.loadAudioData();
+            this.bottomVisible();
             window.addEventListener('scroll', () => {
                 this.bottom = this.bottomVisible()
             });
@@ -106,27 +109,25 @@
             loadAudioData() {
                 this.showRetryButton = false;
                 this.showHorizontalLoader = true;
+
+                let params = {page: this.page};
+
                 if (this.user) {
-                    audioService.getByUsername(this.user, this.page).then(
-                        (collection) => {
-                            this._onGetAudioSuccess(collection)
-                        },
-                        (error) => {
-                            this._onGetAudioFail(error);
-                        });
-                } else {
-                    audioService.getAll(this.page).then(
-                        (collection) => {
-                            this._onGetAudioSuccess(collection)
-                        },
-                        (error) => {
-                            this._onGetAudioFail(error);
-                        });
+                    params.user = this.user;
                 }
+
+                audioService.get(params).then(
+                    (collection) => {
+                        this._onGetAudioSuccess(collection)
+                    },
+                    (error) => {
+                        this._onGetAudioFail(error);
+                    });
             },
             _onGetAudioSuccess(collection){
                 this.showRetryButton = false;
-                this.tracks = collection;
+                this.tracks.push.apply(this.tracks, collection);
+                console.log(collection);
                 if (collection.length < COLLECTION_LENGTH) {
                     this.loadMore = false;
                 }
@@ -181,9 +182,17 @@
                 this.$emit('audioRemove', track);
             },
             filterAudio(query) {
-                client.get(this.apiParams.url, {'query': query}).then(response => {
-                    this.tracks = response.data.collection;
-                });
+                this.isSearching = true;
+                audioService.get({query: query}).then(
+                    (collection) => {
+                        this.tracks = [];
+                        this._onGetAudioSuccess(collection);
+                        this.isSearching = false;
+                    },
+                    (error) => {
+                        this._onGetAudioFail(error);
+                        this.isSearching = false;
+                    });
             },
         },
         components: {

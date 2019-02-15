@@ -1,6 +1,0 @@
-#!/bin/bash
-
-HOST='devid@alexdevid.ru'
-DIR='/var/www/devid/pmp-client/'
-
-ssh ${HOST} "cd ${DIR}; git pull; npm i; npm run build;"

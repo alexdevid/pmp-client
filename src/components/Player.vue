@@ -4,8 +4,8 @@
             <div class="player-track">
                 <div class="track" v-if="audio">
                     <div class="track-image">
-                        <i class="fa fa-music" v-if="!audio.coverThumb"></i>
-                        <img :src="audio.coverThumb" v-if="audio.coverThumb">
+                        <i class="fa fa-music" v-if="!audio.cover_thumb"></i>
+                        <img :src="audio.cover_thumb" v-if="audio.cover_thumb">
                     </div>
                     <div class="track-info">
                         <div class="track-title">

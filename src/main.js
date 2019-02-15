@@ -15,8 +15,7 @@ new Vue({
     store,
     mounted() {
         localStorage.removeItem('playing-track-id');
-        console.log('testing');
-        
+
         this.$root.$on(events.AUTHORIZATION.SUCCESS, user => {
             this.$store.state.user = user;
             this.$root.$emit(events.AUTHORIZATION.COMPLETE, user);

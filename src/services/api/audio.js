@@ -1,56 +1,23 @@
 import client from './api-client';
 
-const params = {
+const defaultParams = {
     page: 1,
-    per_page: 30,
-    order: 'DESC',
-    order_by: 'id',
-    query: null
+    limit: 30,
+    direction: 'DESC',
+    sort: 'id',
+    query: null,
+    user: null,
 };
 
 export default {
     /**
-     * @param {int|null} page
-     * @param {String|null} order
-     * @param {String|null} order_by
+     * @param {Object} params
      * @returns {Promise}
      */
-    getAll(page, order, order_by) {
-        let requestParams = params;
-        if (typeof page !== 'undefined') {
-            requestParams.page = page;
-        }
-        if (typeof order !== 'undefined') {
-            requestParams.order = order;
-        }
-        if (typeof order_by !== 'undefined') {
-            requestParams.order_by = order_by;
-        }
-
+    get(params) {
         return new Promise((resolve, reject) => {
-            client.get('/audio', requestParams).then(response => {
-                resolve(response.data.collection);
-            }, error => {
-                reject(error);
-            });
-        });
-    },
-
-    getByUsername(username, page, order, order_by) {
-        let requestParams = params;
-        if (typeof page !== 'undefined') {
-            requestParams.page = page;
-        }
-        if (typeof order !== 'undefined') {
-            requestParams.order = order;
-        }
-        if (typeof order_by !== 'undefined') {
-            requestParams.order_by = order_by;
-        }
-
-        return new Promise((resolve, reject) => {
-            client.get('/audio/' + username, requestParams).then(response => {
-                resolve(response.data.collection);
+            client.get('/audios', this._prepareParams(params)).then(response => {
+                resolve(response.data._embedded.items);
             }, error => {
                 reject(error);
             });
@@ -69,5 +36,16 @@ export default {
                 reject(error);
             });
         });
+    },
+
+    _prepareParams(params) {
+        let data = defaultParams;
+        for (let key in params) {
+            if (data.hasOwnProperty(key)) {
+                data[key] = params[key];
+            }
+        }
+
+        return data;
     }
 }

@@ -1,8 +1,8 @@
 <template>
     <div class="track" @click="play" v-bind:class="{active: active === track.id, loading: loading}">
         <div class="track-image">
-            <i class="fa fa-music" v-if="!track.coverThumb"></i>
-            <img :src="track.coverThumb" v-if="track.coverThumb">
+            <i class="fa fa-music" v-if="!track.cover_thumb"></i>
+            <img :src="track.cover_thumb" v-if="track.cover_thumb">
 
             <div class="track-play-overlay" v-if="active !== track.id">
                 <i class="fa fa-play"></i>
@@ -38,8 +38,8 @@
                         <i class="far fa-check-square" @click.stop="uncheck"></i>
                     </span>
             <span class="player-control control-fav" @click.stop="fav" v-if="!addCheckbox && !addRemove && $store.state.user">
-                        <i class="far fa-heart" v-if="!track.favourite"></i>
-                        <i class="fas fa-heart" v-if="track.favourite"></i>
+                        <i class="far fa-heart" v-if="!track.favorite"></i>
+                        <i class="fas fa-heart" v-if="track.favorite"></i>
                     </span>
             <a class="player-control" @click.stop="" v-if="!addCheckbox && !addRemove" :download="track.artist.title + ' - ' + track.title + '.mp3'" :href="track.src">
                 <i class="fa fa-download"></i>
@@ -120,7 +120,7 @@
             fav() {
                 audioService.fav(this.track.id).then(
                     response => {
-                        this.track.favourite = response.favourite;
+                        this.track.favorite = response.favorite;
                         this.$root.$emit(events.PLAYLIST.FAV, this.track);
                     }, error => console.error(error));
             },

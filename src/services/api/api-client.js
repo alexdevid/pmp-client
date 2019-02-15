@@ -32,6 +32,7 @@ export default {
 
     put(url, data) {
         this._addTokenToRequest();
+
         return Vue.http.put(API_ENDPOINT + url, data);
     },
 

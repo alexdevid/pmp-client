@@ -21,7 +21,7 @@
                     <a v-for="artist in user.artists" class="tag" href="#">{{ artist }}</a>
                 </div>
                 <div class="profile-stats">
-                    <a href="#">{{ user.audioCount }} tracks</a>
+                    <a href="#">{{ user.audio_count }} tracks</a>
                     <!--<a href="#">{{ user.subscriptionsCount }} subscriptions</a> |-->
                     <!--<a href="#">{{ user.playlistsCount }} playlists</a>-->
                 </div>

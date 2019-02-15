@@ -136,13 +136,13 @@
                     }
                 }).then(
                     response => {
-                        const audio = response.body[0];
+                        const audio = response.body;
                         this.$emit(events.UPLOAD.COMPLETE, audio);
                         this.$emit(events.UPLOAD.FINISH);
                         this.complete = true;
                         this.status = UPLOAD_STATUS_COMPLETE;
-                        this.image = audio.coverThumb;
-                        if (audio.addedBefore) {
+                        this.image = audio.cover_thumb;
+                        if (audio.added_before) {
                             this.warning = true;
                             this.status = UPLOAD_STATUS_ALREADY_UPLOADED;
                         }

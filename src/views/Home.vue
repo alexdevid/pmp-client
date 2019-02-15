@@ -1,6 +1,6 @@
 <template>
     <div class="homepage">
-        <Playlist :showLoadingIfEmpty="false" :apiParams="apiParams"></Playlist>
+        <Playlist :showLoadingIfEmpty="false"></Playlist>
     </div>
 </template>
 
@@ -10,18 +10,7 @@
 
     export default {
         name: "Home",
-
-        data: function () {
-            return {
-                apiParams: {
-                    url: '/audio'
-                }
-            };
-        },
         mounted() {
-            this.$root.$on(events.SEARCH.QUERY_CHANGE, query => {
-                this.filterAudio(query);
-            });
             this.$root.$on("userLogout", () => {
                 this.logout();
             });
