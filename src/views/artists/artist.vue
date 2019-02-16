@@ -1,6 +1,6 @@
 <template>
     <div class="artist-page">
-        <page-header :image="artist.image" :title="artist.title + artist.id">
+        <page-header :image="artist.image" :title="artist.title" v-if="artist">
             <div slot="body">
                 <div class="artist-genres">
                     <a v-for="genre in artist.genres" class="tag" href="#">{{ genre }}</a>
@@ -10,32 +10,38 @@
                 <a href="#" class="button button-alt">{{ artist.audioCount }} tracks</a>
             </div>
         </page-header>
-        <playlist :showLoadingIfEmpty="true" :user="this.$store.state.user.username"></playlist>
+        <div class="page-loading page-loading-fixed" v-if="loading">
+            <i class="fas fa-sync-alt fa-spin"></i>
+        </div>
     </div>
 </template>
 
 <script>
-    import Playlist from '../../components/Playlist.vue';
-    import PageHeader from '../_partials/page-header.vue';
+    import pageHeader from '../_partials/page-header.vue';
+    import artistService from '../../services/api/artist';
 
     export default {
         name: "artist",
         data () {
             return {
-                artist: {
-                    id: 2,
-                    title: 'Metallica',
-                    genres: ['Metall'],
-                    audioCount: 43,
-                    image: 'http://freevectorlogo.net/wp-content/uploads/2012/04/metallica-logo-vector-400x400.png'
-                }
+                loading: true,
+                artist: null
             };
         },
         created() {
             const id = this.$route.params.id;
-            this.artist.id = id;
+            artistService.getArtist(id).then(
+                artist => {
+                    this.artist = artist;
+                    this.loading = false;
+                },
+                error => {
+                    this.loading = false;
+                    console.error(error);
+                }
+            )
         },
-        components: {Playlist, PageHeader}
+        components: {pageHeader}
     };
 </script>
 
