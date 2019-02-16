@@ -13,7 +13,6 @@ export default {
         PAUSE: 'player-pause',
         ENDED: 'player-ended',
         CAN_PLAY: 'player-can-play',
-        SHUFFLE: 'player-shuffle',
         PLAY_NEXT: 'player-play-next',
         PLAY_PREV: 'player-play-prev',
     },
@@ -27,6 +26,9 @@ export default {
     },
     SEARCH: {
         QUERY_CHANGE: 'search-query-change'
+    },
+    SORT: {
+        SORT_CHANGED: 'sort-changed'
     },
     UPLOAD: {
         COMPLETE: 'upload-complete',

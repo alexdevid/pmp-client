@@ -33,7 +33,6 @@
                             @callback="changeVolume" :style="{padding: '0', height: '3px'}"></vue-slider>
             </div>
             <div class="player-controls" v-if="audio">
-                <span class="player-control" @click="shuffle()"><i class="fa fa-random"></i></span>
                 <!--<span class="player-control"><i class="fa fa-redo"></i></span>-->
 
                 <span class="player-control" @click="playPrev"><i class="fa fa-backward"></i></span>
@@ -146,9 +145,6 @@
             },
             changePosition() {
                 this.audioSource.currentTime = this.progress * this.audioSource.duration / 100;
-            },
-            shuffle() {
-                this.$root.$emit(events.PLAYER.SHUFFLE, this.audio);
             },
             getPlayerTime() {
                 if (this.showCurrentTime) {

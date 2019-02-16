@@ -3,4 +3,4 @@ echo "Compiling package from sources...";
 npm run build;
 
 echo "Deploying package to production server...";
-# scp -r ./dist devid@alexdevid.ru:/var/www/devid/pmp-client
+scp -r ./dist devid@alexdevid.ru:/var/www/devid/pmp-client

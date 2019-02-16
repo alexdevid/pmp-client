@@ -6,7 +6,7 @@
             <p>Each file should be less than 50MB</p>
             <p>Allowed file types are `mp3` and `m4a`</p>
             <a href="#" class="button file-select" @click="$refs.file.click()">Select files</a>
-            <input type="file" multiple name="audio" ref="file" @change="onAddFiles($event.target.files)">
+            <input type="file" multiple name="audio" ref="file" @change="onAddFiles($event.target.files)" accept="audio/mp3, audio/mp4">
         </form>
 
         <UploadProgress @upload-complete="onComplete" @upload-error="onError" @upload-finish="onFinish"

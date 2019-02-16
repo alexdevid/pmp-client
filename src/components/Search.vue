@@ -1,13 +1,15 @@
 <template>
     <div class="search">
-        <input type="search" class="input" placeholder="Search" v-model="query">
+        <input type="text" class="input" placeholder="Search" v-model="query">
+        <span class="search-loading" v-if="loading"><i class="fas fa-sync-alt fa-spin"></i></span>
     </div>
 </template>
 
 <script>
-    import Events from '../events';
+    import events from '../events';
 
     export default {
+        props: ['loading'],
         name: "Search",
         data() {
             return {
@@ -16,7 +18,7 @@
         },
         methods: {
             emit() {
-                this.$root.$emit(Events.SEARCH.QUERY_CHANGE, this.query);
+                this.$root.$emit(events.SEARCH.QUERY_CHANGE, this.query);
             }
         },
         watch: {
@@ -28,8 +30,15 @@
 <style scoped lang="less">
     .search {
         margin: 0 10px 15px;
+        position: relative;
         .input {
             padding: 10px;
+        }
+
+        &-loading {
+            position: absolute;
+            right: 15px;
+            top: 8px;
         }
     }
 </style>

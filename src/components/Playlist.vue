@@ -1,10 +1,11 @@
 <template>
     <div class="playlist">
-        <Search v-if="tracks.length > 0 || isSearching"></Search>
+        <search v-if="tracks.length > 0 || isSearching" :loading="isSearching"></search>
         <div class="playlist-controls">
             <router-link to="/upload" class="playlist-controls-item playlist-controls-item-right button button-alt"
                          v-if="$store.state.user !== null"><i class="fa fa-cloud-upload-alt"></i>
             </router-link>
+            <sorter v-if="tracks.length > 0"></sorter>
         </div>
         <Track v-for="track in tracks" :track="track" :active="active" :key="track.id"/>
         <div class="playlist-error" v-if="showRetryButton">
@@ -21,11 +22,12 @@
 </style>
 
 <script>
-    import Search from "@/components/Search.vue";
+    import search from "@/components/Search.vue";
     import Track from '@/components/playlist/track.vue';
     import client from "../services/api/api-client";
     import audioService from '../services/api/audio';
     import events from "../events";
+    import sorter from '../components/playlist/sorter.vue';
 
     const COLLECTION_LENGTH = 30;
 
@@ -50,7 +52,6 @@
         watch: {
             bottom(bottom) {
                 if (bottom) {
-                    console.log('bottom');
                     this.loadNextCollection();
                 }
             }
@@ -73,9 +74,6 @@
             });
             this.$root.$on(events.SEARCH.QUERY_CHANGE, query => {
                 this.filterAudio(query);
-            });
-            this.$root.$on(events.PLAYER.SHUFFLE, track => {
-                this.shuffle(track.id);
             });
             this.$root.$on(events.PLAYER.PLAY, track => {
                 this.active = track.id;
@@ -127,7 +125,6 @@
             _onGetAudioSuccess(collection){
                 this.showRetryButton = false;
                 this.tracks.push.apply(this.tracks, collection);
-                console.log(collection);
                 if (collection.length < COLLECTION_LENGTH) {
                     this.loadMore = false;
                 }
@@ -196,7 +193,7 @@
             },
         },
         components: {
-            Search, Track
+            search, Track, sorter
         }
     };
 </script>
