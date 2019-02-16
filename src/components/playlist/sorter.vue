@@ -1,6 +1,6 @@
 <template>
     <div class="playlist-sorter">
-        <a class="playlist-controls-item button button-alt" @click="onRandomClick">
+        <a class="playlist-controls-item button button-alt" :class="{'button-active': selected.value == 'random'}" @click="onRandomClick">
             <i class="fa fa-random"></i>
         </a>
         <a class="playlist-controls-item button button-alt" @click="onSortChange">
@@ -77,7 +77,11 @@
                 this.sortDesc = !this.sortDesc;
             },
             onRandomClick() {
-                this.selected = this.options[3];
+                if (this.selected.value === 'random') {
+                    this.selected = this.options[0];
+                } else {
+                    this.selected = this.options[3];
+                }
             }
         }
     };

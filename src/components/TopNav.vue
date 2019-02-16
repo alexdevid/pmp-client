@@ -3,12 +3,6 @@
         <router-link to="/" class="top-nav-item">
             Music
         </router-link>
-        <!--<router-link to="/radio" class="top-nav-item">-->
-            <!--Radio-->
-        <!--</router-link>-->
-        <!--<router-link to="/users" class="top-nav-item">-->
-            <!--<i class="fa fa-users"></i> Users-->
-        <!--</router-link>-->
         <router-link to="/profile" class="top-nav-item top-nav-item-user" v-if="$store.state.user !== null">
             {{ $store.state.user.username }} <i class="fa fa-user"></i>
         </router-link>

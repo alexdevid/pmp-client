@@ -22,6 +22,11 @@ export default new Router({
             name: "login",
             component: () => import("./views/Login.vue")
         },
+        {
+            path: "/artist/:id",
+            name: "artist",
+            component: () => import("./views/artists/artist.vue")
+        },
         // {
         //     path: "/about",
         //     name: "about",
@@ -60,7 +65,7 @@ export default new Router({
         {
             path: "/profile",
             name: "profile",
-            component: () => import("./views/account/Profile.vue")
+            component: () => import("./views/account/profile.vue")
         },
         {
             path: "/profile/music",

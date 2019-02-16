@@ -20,8 +20,7 @@
                 {{ track.title }}
             </div>
             <div class="track-artist">
-                <span v-if="track.artist">{{ track.artist.title }}</span>
-                <span v-if="!track.artist">Unknown</span>
+                <span v-if="track.artist" @click.stop="redirectToArtist(track.artist.id)">{{ track.artist.title }}</span>
             </div>
         </div>
         <div class="track-duration">
@@ -133,6 +132,9 @@
             remove() {
 
             },
+            redirectToArtist(id) {
+                return this.$router.push('/artist/' + id);
+            }
         }
     };
 </script>
