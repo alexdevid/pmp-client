@@ -1,13 +1,6 @@
 <template>
     <div class="profile">
-        <Message v-if="profileError" :type="'error relative'">
-            <div slot="body">
-                There was an error while receiving profile data
-                <p>
-                    <button class="button" @click="loadUserData()">Try again</button>
-                </p>
-            </div>
-        </Message>
+        <message v-if="profileError" :type="'error'" :message="'There was an error while receiving profile data <button class=\'button\' @click=\'loadUserData()\'>Try again</button>'"></message>
         <page-header :image="image" :title="user.username" v-if="user && !profileError">
             <div slot="body">
                 <div class="profile-genres">
@@ -144,7 +137,7 @@
     import events from "../../events";
     import client from "../../services/api/api-client";
     import Playlist from '@/components/Playlist.vue';
-    import Message from '@/components/Message.vue';
+    import Message from '@/components/message.vue';
     import PageHeader from '../_partials/page-header.vue';
 
     export default {

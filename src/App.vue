@@ -10,47 +10,36 @@
         <div class="content" v-if="displayView">
             <router-view></router-view>
         </div>
-        <Message v-if="showLoginMessage" :type="'error'">
-            <div slot="header">Authorization Error</div>
-            <div slot="body">
-                <p>
-                    There was an error with your authorization. <br>
-                    Please log-in again
-                </p>
-            </div>
-        </Message>
     </div>
 </template>
 
 <script>
-    import Player from "@/components/Player.vue";
-    import TopNav from "@/components/TopNav.vue";
-    import Message from "@/components/Message.vue";
+    import Player from "./components/Player.vue";
+    import TopNav from "./components/TopNav.vue";
     import Client from "./services/api/api-client.js";
-    import Events from "./events";
+    import events from "./events";
 
     export default {
         name: "app",
         data: function () {
             return {
                 authorized: false,
-                showLoginMessage: false,
                 displayView: false
             };
         },
         mounted() {
-            this.$root.$on("userLogout", () => {
+            this.$root.$on(events.AUTHORIZATION.LOGOUT, () => {
                 this.logout();
             });
-            this.$root.$on(Events.AUTHORIZATION.SUCCESS, username => {
+            this.$root.$on(events.AUTHORIZATION.SUCCESS, username => {
                 this.authorized = true;
                 this.showLoginMessage = false;
             });
-            this.$root.$on(Events.AUTHORIZATION.FAILURE, () => {
+            this.$root.$on(events.AUTHORIZATION.FAILURE, () => {
                 this.authorized = false;
                 this.showLoginMessage = true;
             });
-            this.$root.$on(Events.AUTHORIZATION.COMPLETE, () => {
+            this.$root.$on(events.AUTHORIZATION.COMPLETE, () => {
                 this.displayView = true;
             });
         },
@@ -64,14 +53,8 @@
         },
         components: {
             Player,
-            TopNav,
-            Message
+            TopNav
         },
-        watch: {
-            $route: function (from, to) {
-                //                this.checkLogin();
-            }
-        }
     };
 </script>
 <style src="./assets/less/globals.less" lang="less">

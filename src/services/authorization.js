@@ -64,10 +64,7 @@ export default {
      * @private
      */
     _onTokenError(error) {
-        console.error("AUTH_ERROR", {
-            username: this._getStoredCredentials().username,
-            message: error.body.message
-        });
+        console.error("AUTH_ERROR", {message: error.body.message});
     },
 
     /**

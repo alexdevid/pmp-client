@@ -10,7 +10,7 @@ export default new Router({
         {
             path: "/",
             name: "home",
-            component: () => import("./views/Home.vue")
+            component: () => import("./views/homepage.vue")
         },
         // {
         //     path: "/radio",
@@ -20,7 +20,7 @@ export default new Router({
         {
             path: "/login",
             name: "login",
-            component: () => import("./views/Login.vue")
+            component: () => import("./views/login.vue")
         },
         {
             path: "/artist/:id",

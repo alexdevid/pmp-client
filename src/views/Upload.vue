@@ -82,7 +82,7 @@
 <script>
     import events from '../events';
     import client from '../services/api/api-client';
-    import Message from '@/components/Message.vue';
+    import Message from '@/components/message.vue';
     import UploadProgress from '@/components/upload/Progress.vue';
 
     const MAX_UPLOADED_FILES = 10;
