@@ -11,16 +11,16 @@
                 </div>
             </div>
             <div slot="controls">
-                <a href="#">{{ user.audio_count }} tracks</a>
+                <a href="#" class="button button-alt">{{ user.audio_count }} tracks</a>
                 <!--<a href="#">{{ user.subscriptionsCount }} subscriptions</a> |-->
                 <!--<a href="#">{{ user.playlistsCount }} playlists</a>-->
+                <a href="#" class="profile-controls-logout" @click.prevent="logout()">Sign out</a>
             </div>
         </page-header>
         <Playlist :showLoadingIfEmpty="true" :user="this.$store.state.user.username"></Playlist>
         <div class="row" v-if="empty">
             There are no any tracks uploaded :(
         </div>
-        <a href="#" class="profile-controls-logout" @click.prevent="logout()">Sign out</a>
     </div>
 </template>
 
@@ -87,11 +87,14 @@
             }
 
             &-logout {
-                margin-top: auto;
+                position: absolute;
+                top: 0;
+                right: 0;
+
                 .responsive(450px, {
-                    position: absolute;
                     top: 30px;
                     left: 75px;
+                    right: auto;
                 });
             }
         }
