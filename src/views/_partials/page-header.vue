@@ -19,6 +19,7 @@
 
 <script>
     export default {
+        name: "page-header",
         props: {
             image: {
                 type: String,
@@ -28,8 +29,7 @@
                 type: String,
                 required: true
             }
-        },
-        name: "page-header",
+        }
     };
 </script>
 
