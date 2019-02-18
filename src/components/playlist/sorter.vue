@@ -89,8 +89,10 @@
 
 <style scoped lang="less">
     .playlist-sorter {
+        margin: 20px 0;
+        padding: 0 10px;
         display: flex;
-        align-items: center;
+        justify-content: flex-end;
 
         &-loading {
             position: absolute;

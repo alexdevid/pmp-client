@@ -37,7 +37,7 @@ export default {
         promise.then(response => {
             this._storeCredentials(credentials.username, response.body.token, response.body.refresh_token);
         }, error => {
-            this._onTokenError(error);
+
         });
 
         return promise;
@@ -53,18 +53,9 @@ export default {
         promise.then(response => {
             this._storeCredentials(this._getStoredCredentials().username, response.body.token, response.body.refresh_token);
         }, error => {
-            this._onTokenError(error);
         });
 
         return promise;
-    },
-
-    /**
-     * @param {String} error
-     * @private
-     */
-    _onTokenError(error) {
-        console.error("AUTH_ERROR", {message: error.body.message});
     },
 
     /**

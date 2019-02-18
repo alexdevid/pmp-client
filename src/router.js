@@ -25,7 +25,7 @@ export default new Router({
         {
             path: "/artist/:id",
             name: "artist",
-            component: () => import("./views/artists/artist.vue")
+            component: () => import("./views/artist.vue")
         },
         // {
         //     path: "/about",
@@ -65,22 +65,29 @@ export default new Router({
         {
             path: "/profile",
             name: "profile",
-            component: () => import("./views/account/profile.vue")
-        },
-        {
-            path: "/profile/music",
-            name: "profile-music",
-            component: () => import("./views/account/Favorites.vue")
+            component: () => import("./views/account/profile.vue"),
+            children: [
+                {
+                    path: "",
+                    name: "profile-music",
+                    component: () => import("./views/account/favorites.vue")
+                },
+                {
+                    path: "playlists",
+                    name: "profile-playlists",
+                    component: () => import("./views/account/playlist/list.vue")
+                },
+                {
+                    path: "playlist/add",
+                    name: "playlist-add",
+                    component: () => import("./views/account/playlist/form.vue")
+                },
+            ]
         },
         // {
-        //     path: "/profile/playlists",
-        //     name: "playlists",
-        //     component: () => import("./views/account/Playlists.vue")
-        // },
-        // {
-        //     path: "/profile/playlist/add",
-        //     name: "playlist-add",
-        //     component: () => import("./views/account/AddPlaylist.vue")
+        //     path: "/profile/music",
+        //     name: "profile-music",
+        //     component: () => import("./views/account/Favorites.vue")
         // },
         // {
         //     path: "/playlist/:id",

@@ -1,15 +1,18 @@
 import client from './api-client';
 
+const COLLECTION_LENGTH = 10;
 const defaultParams = {
     page: 1,
-    limit: 30,
+    limit: COLLECTION_LENGTH,
     direction: 'DESC',
     sort: 'id',
     query: null,
     user: null,
 };
 
-export default {
+const audioService = {
+    COLLECTION_LENGTH: COLLECTION_LENGTH,
+
     /**
      * @param {Object} params
      * @returns {Promise}
@@ -17,7 +20,7 @@ export default {
     get(params) {
         return new Promise((resolve, reject) => {
             client.get('/audios', this._prepareParams(params)).then(response => {
-                resolve(response.data._embedded.items);
+                resolve(response.data);
             }, error => {
                 reject(error);
             });
@@ -48,4 +51,6 @@ export default {
 
         return data;
     }
-}
+};
+
+export default audioService;

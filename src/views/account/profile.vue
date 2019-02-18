@@ -1,6 +1,6 @@
 <template>
     <div class="profile">
-        <message v-if="profileError" :type="'error'" :message="'There was an error while receiving profile data <button class=\'button\' @click=\'loadUserData()\'>Try again</button>'"></message>
+        <xhr-error message="profileError" v-if="profileError" @retry="loadUserData"></xhr-error>
         <page-header :image="image" :title="user.username" v-if="user && !profileError">
             <div slot="body">
                 <div class="profile-genres">
@@ -11,16 +11,13 @@
                 </div>
             </div>
             <div slot="controls">
-                <a href="#" class="button button-alt">{{ user.audio_count }} tracks</a>
+                <router-link to="/profile" class="button button-alt">{{ user.audio_count }} tracks</router-link>
+                <router-link to="/profile/playlists" class="button button-alt">{{ user.audio_count }} playlists</router-link>
                 <!--<a href="#">{{ user.subscriptionsCount }} subscriptions</a> |-->
-                <!--<a href="#">{{ user.playlistsCount }} playlists</a>-->
                 <a href="#" class="profile-controls-logout" @click.prevent="logout()">Sign out</a>
             </div>
         </page-header>
-        <Playlist :showLoadingIfEmpty="true" :user="this.$store.state.user.username"></Playlist>
-        <div class="row" v-if="empty">
-            There are no any tracks uploaded :(
-        </div>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -139,12 +136,12 @@
 <script>
     import events from "../../events";
     import client from "../../services/api/api-client";
-    import Playlist from '@/components/Playlist.vue';
-    import Message from '@/components/message.vue';
-    import PageHeader from '../_partials/page-header.vue';
+    import xhrError from '../../components/xhr-error.vue';
+    import pageHeader from '../_partials/page-header.vue';
 
     export default {
         name: "Profile",
+        components: {xhrError, pageHeader},
         data: function () {
             return {
                 empty: false,
@@ -178,7 +175,6 @@
                         this.profileError = true;
                     });
             }
-        },
-        components: {Playlist, Message, PageHeader}
+        }
     };
 </script>

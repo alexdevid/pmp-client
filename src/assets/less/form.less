@@ -23,7 +23,7 @@
     }
 
     &-error {
-        background-color: #f5cfcb;
+        background-color: #f3f3f3;
         border-color: #f49191;
 
         &:active,
@@ -68,7 +68,8 @@
         border-color: #cecece;
         color: #7d7d7d;
 
-        &.button-active {
+        &.button-active,
+        &.router-link-exact-active {
             background-color: fadeout(#7d7d7d, 90%);
             box-shadow: inset 0 0 3px fadeout(#000, 85%);
         }

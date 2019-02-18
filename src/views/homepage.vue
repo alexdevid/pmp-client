@@ -1,14 +1,34 @@
 <template>
     <div class="homepage">
-        <playlist :showLoadingIfEmpty="false"></playlist>
+        <search :loading="searching" @change="onSearchValueChange"></search>
     </div>
 </template>
 
 <script>
-    import playlist from "../components/Playlist.vue";
+    import search from "../components/search.vue";
 
     export default {
         name: "home",
-        components: {playlist}
+        components: {search},
+        data() {
+            return {
+                searching: false
+            }
+        },
+        methods: {
+            onSearchValueChange(query) {
+                if (query.length < 3) {
+                    return;
+                }
+
+                console.log(query)
+            }
+        }
     };
 </script>
+
+<style scoped lang="less">
+    .homepage {
+        padding: 100px 0;
+    }
+</style>

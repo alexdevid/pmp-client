@@ -5,7 +5,7 @@
                 <div class="modal-container" :style="{width: width}">
                     <div class="modal-header">
                         <slot name="header">
-                            default body
+                            default header
                         </slot>
                         <i class="fa fa-times" @click="$emit('close')"></i>
                     </div>
@@ -29,8 +29,14 @@
 
 <script>
     export default {
-        name: "Modal",
-        props: ["width"],
+        name: "modal",
+        props: {
+            width: {
+                type: Number,
+                required: false,
+                default: 400
+            }
+        },
         data: function () {
             return {};
         }

@@ -13,34 +13,36 @@
                 <i class="fa fa-pause" v-if="showPauseOverlay"></i>
                 <i class="fas fa-sync-alt fa-spin" v-if="loading"></i>
             </div>
-
         </div>
         <div class="track-info">
             <div class="track-title">
                 {{ track.title }}
             </div>
             <div class="track-artist">
-                <span v-if="track.artist" @click.stop="redirectToArtist(track.artist.id)">{{ track.artist.title }}</span>
+                <span v-if="track.artist" @click.stop="redirectToArtist(track.artist.id)">{{ track.artist.title
+                    }}</span>
             </div>
         </div>
         <div class="track-duration">
             {{ track.durationFormatted }}
         </div>
         <div class="track-controls">
-                <span class="player-control player-control-checkbox" v-if="addRemove">
-                    <i class="fa fa-times" @click.stop="remove"></i>
-                </span>
-            <span class="player-control player-control-checkbox" v-if="addCheckbox && !isChecked(track)">
-                    <i class="far fa-square" @click.stop="check"></i>
-                </span>
-            <span class="player-control player-control-checkbox" v-if="addCheckbox && isChecked(track)">
-                        <i class="far fa-check-square" @click.stop="uncheck"></i>
-                    </span>
-            <span class="player-control control-fav" @click.stop="fav" v-if="!addCheckbox && !addRemove && $store.state.user">
-                        <i class="far fa-heart" v-if="!track.favorite"></i>
-                        <i class="fas fa-heart" v-if="track.favorite"></i>
-                    </span>
-            <a class="player-control" @click.stop="" v-if="!addCheckbox && !addRemove" :download="track.artist.title + ' - ' + track.title + '.mp3'" :href="track.src">
+            <div class="player-control" v-if="track.added && !showRemove">
+                <i class="fa fa-check"></i>
+            </div>
+            <div class="player-control" @click.stop="$emit('add', track);" v-if="showAdd && !track.added">
+                <i class="fa fa-plus"></i>
+            </div>
+            <div class="player-control" @click.stop="$emit('remove', track)" v-if="showRemove">
+                <i class="fa fa-times"></i>
+            </div>
+            <div class="player-control control-fav" @click.stop="fav"
+                 v-if="!showAdd && !showRemove && $store.state.user">
+                <i class="far fa-heart" v-if="!track.favorite"></i>
+                <i class="fas fa-heart" v-if="track.favorite"></i>
+            </div>
+            <a class="player-control" @click.stop="" v-if="!showAdd && !showRemove"
+               :download="track.artist.title + ' - ' + track.title + '.mp3'" :href="track.src">
                 <i class="fa fa-download"></i>
             </a>
         </div>
@@ -54,7 +56,23 @@
 
     export default {
         name: 'Track',
-        props: ['track', 'addCheckbox', 'addRemove', 'active'],
+//        props: ['track', 'addCheckbox', 'addRemove', 'active'],
+        props: {
+            track: {
+                type: Object
+            },
+            active: {
+                type: Number
+            },
+            showAdd: {
+                type: Boolean,
+                required: false
+            },
+            showRemove: {
+                type: Boolean,
+                required: false
+            }
+        },
         data: function () {
             return {
                 loading: false,

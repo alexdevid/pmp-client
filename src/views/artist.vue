@@ -17,8 +17,8 @@
 </template>
 
 <script>
-    import pageHeader from '../_partials/page-header.vue';
-    import artistService from '../../services/api/artist';
+    import pageHeader from './_partials/page-header.vue';
+    import artistService from '../services/api/artist';
 
     export default {
         name: "artist",
@@ -46,5 +46,5 @@
 </script>
 
 <style lang="less" scoped>
-    @import "../../assets/less/tag.less";
+    @import "../assets/less/tag.less";
 </style>
