@@ -55,13 +55,12 @@
                 this.loading = true;
                 audioService.get(this.request).then(data => {
                     this.loading = false;
-                    const tracks = data._embedded.items;
-                    if (this.tracks.length + data.limit === data.total) {
+                    this.tracks.push.apply(this.tracks, data._embedded.items);
+                    if (this.tracks.length === data.total) {
                         this.loadMore = false;
                     } else {
                         this.request.page++;
                     }
-                    this.tracks.push.apply(this.tracks, tracks);
                 }, error => {
                     this.loading = false;
                     this.error = error.statusText;

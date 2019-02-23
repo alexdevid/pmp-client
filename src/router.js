@@ -89,11 +89,11 @@ export default new Router({
         //     name: "profile-music",
         //     component: () => import("./views/account/Favorites.vue")
         // },
-        // {
-        //     path: "/playlist/:id",
-        //     name: "playlist-page",
-        //     component: () => import("./views/PlaylistPage.vue")
-        // },
+        {
+            path: "/playlist/:id",
+            name: "playlist-page",
+            component: () => import("./views/playlist-page.vue")
+        },
         // {
         //     path: "/profile/settings",
         //     name: "settings",

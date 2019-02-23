@@ -12,15 +12,15 @@
 </template>
 
 <script>
-    import audioService from '../../services/api/audio';
-    import playlist from "../../components/playlist/playlist.vue";
-    import sorter from "../../components/playlist/sorter.vue";
-    import preloader from '../../components/preloader.vue';
-    import search from '../../components/search.vue';
-    import xhrError from '../../components/xhr-error.vue';
+    import audioService from '../../../services/api/audio';
+    import playlist from "../../../components/playlist/playlist.vue";
+    import sorter from "../../../components/playlist/sorter.vue";
+    import preloader from '../../../components/preloader.vue';
+    import search from '../../../components/search.vue';
+    import xhrError from '../../../components/xhr-error.vue';
 
     export default {
-        name: "profile-favorites",
+        name: "playlist-page",
         components: {playlist, sorter, search, preloader, xhrError},
         data: function () {
             return {
@@ -55,12 +55,13 @@
                 this.loading = true;
                 audioService.get(this.request).then(data => {
                     this.loading = false;
-                    this.tracks.push.apply(this.tracks, data._embedded.items);
-                    if (this.tracks.length === data.total) {
+                    const tracks = data._embedded.items;
+                    if (this.tracks.length + data.limit === data.total) {
                         this.loadMore = false;
                     } else {
                         this.request.page++;
                     }
+                    this.tracks.push.apply(this.tracks, tracks);
                 }, error => {
                     this.loading = false;
                     this.error = error.statusText;

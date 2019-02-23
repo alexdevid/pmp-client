@@ -9,10 +9,10 @@
                 <div class="page-header-body">
                     <slot name="body"></slot>
                 </div>
-                <div class="page-header-controls">
-                    <slot name="controls"></slot>
-                </div>
             </div>
+        </div>
+        <div class="page-header-controls">
+            <slot name="controls"></slot>
         </div>
     </div>
 </template>
@@ -62,12 +62,26 @@
         }
 
         &-controls {
-            margin-top: auto;
             text-transform: uppercase;
+            padding-bottom: 10px;
+            margin: 0 10px 30px;
+            border-bottom: 1px solid #f4f9fc;
 
             a {
                 margin: 0 20px;
+                font-weight: bold;
+                color: #7d7d7d;
+                padding-bottom: 13px;
 
+                &:hover {
+                    text-decoration: none;
+                    color: #000;
+                }
+                &.active,
+                &.router-link-exact-active {
+                    color: #000;
+                    border-bottom: 3px solid #000;
+                }
                 &:first-child {
                     margin-left: 0;
                 }

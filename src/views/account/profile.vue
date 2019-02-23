@@ -11,10 +11,8 @@
                 </div>
             </div>
             <div slot="controls">
-                <router-link to="/profile" class="button button-alt">{{ user.audio_count }} tracks</router-link>
-                <router-link to="/profile/playlists" class="button button-alt">{{ user.audio_count }} playlists</router-link>
-                <!--<a href="#">{{ user.subscriptionsCount }} subscriptions</a> |-->
-                <a href="#" class="profile-controls-logout" @click.prevent="logout()">Sign out</a>
+                <router-link to="/profile">{{ user.audio_count }} tracks</router-link>
+                <router-link to="/profile/playlists">{{ user.playlist_count }} playlists</router-link>
             </div>
         </page-header>
         <router-view></router-view>
@@ -123,7 +121,7 @@
         }
 
         .page-loading {
-            margin: 95px 0 92px;
+            padding: 100px 0;
         }
         .message.error {
             margin: 0 10px 30px;

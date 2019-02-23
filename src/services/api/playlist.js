@@ -1,16 +1,15 @@
 import client from './api-client';
 
-const COLLECTION_LENGTH = 50;
+const COLLECTION_LENGTH = 30;
 const defaultParams = {
     page: 1,
     limit: COLLECTION_LENGTH,
     direction: 'DESC',
     sort: 'id',
-    query: null,
     user: null,
 };
 
-const audioService = {
+const playlistService = {
     COLLECTION_LENGTH: COLLECTION_LENGTH,
 
     /**
@@ -19,7 +18,7 @@ const audioService = {
      */
     get(params) {
         return new Promise((resolve, reject) => {
-            client.get('/audios', this._prepareParams(params)).then(response => {
+            client.get('/playlists', this._prepareParams(params)).then(response => {
                 resolve(response.data);
             }, error => {
                 reject(error);
@@ -28,12 +27,22 @@ const audioService = {
     },
 
     /**
-     * @param {int|String} id
+     * @param {Number} id
      * @returns {Promise}
      */
-    fav(id) {
+    getById(id) {
         return new Promise((resolve, reject) => {
-            client.post('/audio/favorite/' + id).then(response => {
+            client.get('/playlist/' + id).then(response => {
+                resolve(response.data);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+    add(playlist) {
+        return new Promise((resolve, reject) => {
+            client.put('/playlist', playlist).then(response => {
                 resolve(response.data);
             }, error => {
                 reject(error);
@@ -53,4 +62,4 @@ const audioService = {
     }
 };
 
-export default audioService;
+export default playlistService;

@@ -8,9 +8,10 @@
                 Add new playlist
             </div>
         </router-link>
-        <router-link class="thumb" to="#" v-for="playlist in playlists">
+        <router-link class="thumb" to="#" v-for="playlist in playlists" :to="{name: 'playlist-page', params: {id: playlist.id}}">
             <div class="thumb-image">
-                <img src="../../../assets/userpic.jpg" alt="">
+                <i class="fa fa-music" v-if="!playlist.image"></i>
+                <img :src="playlist.image" v-if="playlist.image">
             </div>
             <div class="thumb-count">
                 <i class="fa fa-music"></i> {{ playlist.audio_count }}
@@ -19,61 +20,48 @@
                 {{ playlist.title }}
             </div>
         </router-link>
+
+        <xhr-error message="error" v-if="error != null" @retry="loadPlaylists"></xhr-error>
     </div>
 </template>
 <script>
+    import playlistService from '../../../services/api/playlist';
+    import xhrError from '../../../components/xhr-error.vue';
+
     export default {
         name: "profile-playlists",
 
         data: function () {
             return {
-                playlists: [
-                    {
-                        id: 1,
-                        title: 'Sample playlist',
-                        audio_count: 43
-                    },
-                    {
-                        id: 1,
-                        title: 'Sample playlist',
-                        audio_count: 43
-                    },
-                    {
-                        id: 1,
-                        title: 'Sample playlist',
-                        audio_count: 43
-                    },
-                    {
-                        id: 1,
-                        title: 'Sample playlist',
-                        audio_count: 43
-                    },
-                    {
-                        id: 1,
-                        title: 'Sample playlist',
-                        audio_count: 43
-                    },
-                    {
-                        id: 1,
-                        title: 'Sample playlist',
-                        audio_count: 43
-                    },
-                    {
-                        id: 1,
-                        title: 'Sample playlist',
-                        audio_count: 43
-                    },
-                ]
+                loading: false,
+                error: null,
+                request: {
+                    page: 1,
+                    user: this.$store.state.user.username
+                },
+                playlists: []
             };
         },
         methods: {
-            addPlaylist() {
-                this.$router.push('/profile/playlist/add');
-            },
+            loadPlaylists() {
+                this.error = null;
+                this.loading = true;
+                playlistService.get(this.request).then(
+                    data => {
+                        this.playlists = data._embedded.items;
+                        this.loading = false;
+                    },
+                    error => {
+                        this.loading = false;
+                        console.log(error);
+                    }
+                )
+            }
         },
-        mounted() {
+        created () {
+            this.loadPlaylists();
         },
-        components: {}
+        components: {xhrError}
     };
 </script>
 

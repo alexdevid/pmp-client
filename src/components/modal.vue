@@ -32,9 +32,9 @@
         name: "modal",
         props: {
             width: {
-                type: Number,
+                type: String,
                 required: false,
-                default: 400
+                default: '600px;'
             }
         },
         data: function () {
